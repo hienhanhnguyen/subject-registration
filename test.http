@@ -1,0 +1,20 @@
+### signin Request
+POST http://localhost:3000/api/v1/auth/login
+Content-Type: application/json
+
+{
+    "username": "test",
+    "password": "test"
+}
+### Signup 
+POST http://localhost:3000/api/v1/auth/signup
+Content-Type: application/json
+
+{
+    "username": "test",
+    "password": "test",
+    "role": "admin"
+}
+###
+GET http://localhost:3000/api/v1/test
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsInVzZXJuYW1lIjoidGVzdCIsImlhdCI6MTczMTU3MjYzNSwiZXhwIjoxNzMxNTc2MjM1fQ.Hejo0StG5gRPIs0HuD6FWTEdjmHZJ9jxTMrnn5I-gQg
