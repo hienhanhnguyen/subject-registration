@@ -1,0 +1,111 @@
+DROP PROCEDURE IF EXISTS GenerateLopHoc;
+truncate table lop_hoc;
+
+DELIMITER $$
+CREATE PROCEDURE GenerateLopHoc()
+BEGIN
+    -- 1. Declare variables
+    DECLARE done INT DEFAULT 0;
+    DECLARE hk VARCHAR(10);
+    DECLARE mh VARCHAR(10);
+    DECLARE lop VARCHAR(10);
+
+    -- 2. Declare cursors
+    DECLARE hk_cursor CURSOR FOR SELECT * FROM (
+        SELECT 'HK161' UNION SELECT 'HK162' UNION SELECT 'HK163' UNION 
+        SELECT 'HK171' UNION SELECT 'HK172' UNION SELECT 'HK173' UNION 
+        SELECT 'HK181' UNION SELECT 'HK182' UNION SELECT 'HK183' UNION 
+        SELECT 'HK191' UNION SELECT 'HK192' UNION SELECT 'HK193' UNION 
+        SELECT 'HK201' UNION SELECT 'HK202' UNION SELECT 'HK203' UNION 
+        SELECT 'HK211' UNION SELECT 'HK212' UNION SELECT 'HK213' UNION 
+        SELECT 'HK221' UNION SELECT 'HK222' UNION SELECT 'HK223' UNION 
+        SELECT 'HK231' UNION SELECT 'HK232' UNION SELECT 'HK233' UNION 
+        SELECT 'HK241' UNION SELECT 'HK242' UNION SELECT 'HK243'
+    ) AS hk_list;
+
+    DECLARE mh_cursor CURSOR FOR SELECT * FROM (
+        SELECT '007303' UNION SELECT '0X6603' UNION SELECT '216303' UNION 
+        SELECT 'AS1001' UNION SELECT 'AS1003' UNION SELECT 'AS1005' UNION 
+        SELECT 'AS1007' UNION SELECT 'AS2053' UNION SELECT 'AS2055' UNION 
+        SELECT 'AS2057' UNION SELECT 'AS2059' UNION SELECT 'AS2061' UNION 
+        SELECT 'AS2063' UNION SELECT 'AS3001' UNION SELECT 'AS3003' UNION 
+        SELECT 'AS3011' UNION SELECT 'AS3013' UNION SELECT 'AS3015' UNION 
+        SELECT 'AS3017' UNION SELECT 'AS3019' UNION SELECT 'AS3021' UNION 
+        SELECT 'AS3023' UNION SELECT 'AS3025' UNION SELECT 'AS3027' UNION 
+        SELECT 'AS3029' UNION SELECT 'AS3031' UNION SELECT 'AS3035' UNION 
+        SELECT 'AS3083' UNION SELECT 'AS3085' UNION SELECT 'AS3087' UNION 
+        SELECT 'AS3089' UNION SELECT 'AS3091' UNION SELECT 'AS3093' UNION 
+        SELECT 'AS3097' UNION SELECT 'AS3099' UNION SELECT 'AS3101' UNION 
+        SELECT 'AS3103' UNION SELECT 'AS3105' UNION SELECT 'AS3107' UNION 
+        SELECT 'AS3109' UNION SELECT 'AS3111' UNION SELECT 'AS3113' UNION 
+        SELECT 'AS3115' UNION SELECT 'AS3117' UNION SELECT 'AS3119' UNION 
+        SELECT 'AS3121' UNION SELECT 'AS3123' UNION SELECT 'AS3125' UNION 
+        SELECT 'AS3127' UNION SELECT 'AS3129' UNION SELECT 'AS3131' UNION 
+        SELECT 'CH1003' UNION SELECT 'CH5283' UNION SELECT 'CH5285' UNION 
+        SELECT 'CH5287' UNION SELECT 'CH5289' UNION SELECT 'CH5291' UNION 
+        SELECT 'CI1051' UNION SELECT 'CI1053' UNION SELECT 'CI1055' UNION 
+        SELECT 'CI1057' UNION SELECT 'CI1061' UNION SELECT 'CI1063' UNION 
+        SELECT 'CI1065' UNION SELECT 'CI1067' UNION SELECT 'CI1069' UNION 
+        SELECT 'CI1071' UNION SELECT 'CO1005' UNION SELECT 'CO1023' UNION 
+        SELECT 'CO1027' UNION SELECT 'CO2003' UNION SELECT 'CO2013' UNION 
+        SELECT 'CO3005' UNION SELECT 'IM1025' UNION SELECT 'LA1003' UNION 
+        SELECT 'MT1007' UNION SELECT 'MT2013' UNION SELECT 'PH1003' UNION 
+        SELECT 'SP1007' UNION SELECT 'SP1031' UNION SELECT 'SP1033' UNION 
+        SELECT 'SP1035'
+    ) AS mh_list;
+
+    DECLARE lop_cursor CURSOR FOR SELECT * FROM (
+        SELECT 'L01' UNION SELECT 'L02' UNION SELECT 'L03' UNION 
+        SELECT 'TN01' UNION SELECT 'CC01' UNION SELECT 'CC02'
+    ) AS lop_list;
+
+    -- 3. Declare handler
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+
+    -- Open hk_cursor and iterate through it
+    OPEN hk_cursor;
+    hk_loop: LOOP
+        SET done = 0; -- Reset done flag for the hk_cursor
+        FETCH hk_cursor INTO hk;
+        IF done THEN
+            LEAVE hk_loop;
+        END IF;
+
+        -- Open mh_cursor
+        OPEN mh_cursor;
+        mh_loop: LOOP
+            SET done = 0; -- Reset done flag for the mh_cursor
+            FETCH mh_cursor INTO mh;
+            IF done THEN
+                LEAVE mh_loop;
+            END IF;
+
+            -- Open lop_cursor
+            OPEN lop_cursor;
+            lop_loop: LOOP
+                SET done = 0; -- Reset done flag for the lop_cursor
+                FETCH lop_cursor INTO lop;
+                IF done THEN
+                    LEAVE lop_loop;
+                END IF;
+
+                -- Insert data into lop_hoc
+                INSERT INTO lop_hoc 
+                (ten_lop, ma_mon, ma_hk, ma_dot_dk, ma_he_dao_tao, loai_lop, si_so_hien_tai, si_so_min, si_so_max, ten_lop_pt, ma_mon_pt, ma_hk_pt) 
+                VALUES 
+                (lop, mh, hk, NULL, 'CQ', 'CQ', 30, 15, 60, NULL, NULL, NULL);
+
+            END LOOP lop_loop;
+            CLOSE lop_cursor;
+
+        END LOOP mh_loop;
+        CLOSE mh_cursor;
+
+    END LOOP hk_loop;
+    CLOSE hk_cursor;
+END$$
+
+DELIMITER ;
+
+CALL GenerateLopHoc();
+
