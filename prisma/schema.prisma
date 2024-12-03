@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,11 +7,636 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id       Int      @id @default(autoincrement())
-  username String   @unique
-  password String
-  role     String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model bang_diem_hoc_ky {
+  ma_sv               Int
+  ma_hoc_ky           String             @db.VarChar(50)
+  ma_bang_diem_hoc_ky Int                @default(1)
+  gpa_10_hoc_ky       Decimal            @default(0.00) @db.Decimal(4, 2)
+  gpa_4_hoc_ky        Decimal            @default(0.00) @db.Decimal(4, 2)
+  tin_chi_hoc_ky      Int                @default(0)
+  hoc_ky              hoc_ky             @relation(fields: [ma_hoc_ky], references: [ma_hk], map: "FK_bang_diem_hoc_ky_hoc_ky")
+  sinh_vien           sinh_vien          @relation(fields: [ma_sv], references: [ma_nguoi_dung], map: "FK_bang_diem_hoc_ky_sinh_vien")
+  chi_tiet_diem_hk    chi_tiet_diem_hk[]
+
+  @@id([ma_sv, ma_hoc_ky, ma_bang_diem_hoc_ky])
+  @@index([ma_hoc_ky], map: "FK_bang_diem_hoc_ky_hoc_ky")
+}
+
+model bang_diem_tong_ket {
+  ma_sv            Int
+  ma_bang_diem_tk  Int                @default(1)
+  gpa_4            Decimal            @default(0.00) @db.Decimal(4, 2)
+  gpa_10           Decimal            @default(0.00) @db.Decimal(4, 2)
+  tong_tin_chi     Int                @default(0)
+  ngay_cap_nhat    DateTime           @default(dbgenerated("(curdate())")) @db.Date
+  sinh_vien        sinh_vien          @relation(fields: [ma_sv], references: [ma_nguoi_dung], map: "FK_bang_diem_tong_ket_sinh_vien")
+  chi_tiet_diem_tk chi_tiet_diem_tk[]
+
+  @@id([ma_sv, ma_bang_diem_tk])
+}
+
+model bang_tieng_anh_sv {
+  ma_cc               Int
+  ma_sv               Int
+  ma_lich_su          String                        @default("") @db.VarChar(36)
+  diem                Decimal                       @default(0.00) @db.Decimal(5, 2)
+  ngay_cap            DateTime                      @db.Date
+  ngay_het_han        DateTime                      @db.Date
+  trang_thai          bang_tieng_anh_sv_trang_thai?
+  chung_chi_tieng_anh chung_chi_tieng_anh           @relation(fields: [ma_cc], references: [ma_cc], map: "FK_bang_tieng_anh_sv_chung_chi_tieng_anh")
+  lich_su             lich_su                       @relation(fields: [ma_lich_su], references: [ma_lich_su], onDelete: NoAction, map: "FK_bang_tieng_anh_sv_lich_su")
+  sinh_vien           sinh_vien                     @relation(fields: [ma_sv], references: [ma_nguoi_dung], map: "FK_bang_tieng_anh_sv_sinh_vien")
+
+  @@id([ma_cc, ma_sv, ma_lich_su])
+  @@index([ma_lich_su], map: "FK_bang_tieng_anh_sv_lich_su")
+  @@index([ma_sv], map: "FK_bang_tieng_anh_sv_sinh_vien")
+}
+
+model chi_tiet_diem_hk {
+  ma_sv            Int
+  ma_hk            String           @db.VarChar(50)
+  ma_bang_diem_hk  Int
+  ten_lop          String           @db.VarChar(50)
+  ma_mon           String           @db.VarChar(50)
+  ma_hkL           String           @db.VarChar(50)
+  diem_BT          Decimal          @default(0.00) @db.Decimal(4, 2)
+  diem_BTL         Decimal          @default(0.00) @db.Decimal(4, 2)
+  diem_TN          Decimal          @default(0.00) @db.Decimal(4, 2)
+  diem_GK          Decimal          @default(0.00) @db.Decimal(4, 2)
+  diem_CK          Decimal          @default(0.00) @db.Decimal(4, 2)
+  diem_10_TK       Decimal          @default(0.00) @db.Decimal(4, 2)
+  diem_4_TK        Decimal          @default(0.00) @db.Decimal(4, 2)
+  diem_chu_TK      String           @default("0") @db.VarChar(50)
+  bang_diem_hoc_ky bang_diem_hoc_ky @relation(fields: [ma_sv, ma_hk, ma_bang_diem_hk], references: [ma_sv, ma_hoc_ky, ma_bang_diem_hoc_ky], map: "FK_chi_tiet_diem_hk_bang_diem_hoc_ky")
+  lop_hoc          lop_hoc          @relation(fields: [ten_lop, ma_mon, ma_hkL], references: [ten_lop, ma_mon, ma_hk], map: "FK_chi_tiet_diem_hk_lop_hoc")
+
+  @@id([ma_sv, ma_hk, ma_bang_diem_hk, ten_lop, ma_mon, ma_hkL])
+  @@index([ten_lop, ma_mon, ma_hkL], map: "FK_chi_tiet_diem_hk_lop_hoc")
+  @@index([ma_sv, ma_hk, ma_bang_diem_hk], map: "ma_sv_ma_hk_ma_bang_diem_hk")
+}
+
+model chi_tiet_diem_tk {
+  ma_chi_tiet        Int                @default(autoincrement())
+  ma_sv              Int
+  ma_bang_diem_tk    Int
+  ma_mon_hoc         String             @db.VarChar(50)
+  thoi_diem_hoc      DateTime           @db.Date
+  diem_10_cao_nhat   Decimal            @default(0.00) @db.Decimal(4, 2)
+  diem_4_cao_nhat    Decimal            @default(0.00) @db.Decimal(4, 2)
+  diem_chu_cao_nhat  String             @db.VarChar(50)
+  bang_diem_tong_ket bang_diem_tong_ket @relation(fields: [ma_sv, ma_bang_diem_tk], references: [ma_sv, ma_bang_diem_tk], map: "FK_chi_tiet_diem_tk_bang_diem_tong_ket")
+  mon_hoc            mon_hoc            @relation(fields: [ma_mon_hoc], references: [ma_mon_hoc], map: "FK_chi_tiet_diem_tk_mon_hoc")
+
+  @@id([ma_chi_tiet, ma_sv, ma_bang_diem_tk, ma_mon_hoc])
+  @@index([ma_sv, ma_bang_diem_tk], map: "FK_chi_tiet_diem_tk_bang_diem_tong_ket")
+  @@index([ma_mon_hoc], map: "FK_chi_tiet_diem_tk_mon_hoc")
+}
+
+model chuan_anh_van {
+  ma_chuan_anh_van  Int               @id
+  ten_chuan_anh_van String?           @db.VarChar(50)
+  chuan_sv          chuan_sv[]
+  sinh_vien         sinh_vien[]
+  yeu_cau_anh_van   yeu_cau_anh_van[]
+}
+
+model chuan_sv {
+  ma_chuan_sv      Int            @id
+  ten_chuan_sv     String?        @db.VarChar(50)
+  ma_chuan_anh_van Int?
+  ctxh_yeu_cau     Int            @default(0)
+  tin_chi_tich_luy Int            @default(0)
+  chuan_anh_van    chuan_anh_van? @relation(fields: [ma_chuan_anh_van], references: [ma_chuan_anh_van], map: "fk_chuan_sv_ma_chuan_anh_van")
+  sinh_vien        sinh_vien[]
+
+  @@index([ma_chuan_anh_van], map: "fk_chuan_sv_ma_chuan_anh_van")
+}
+
+model chung_chi_tieng_anh {
+  ma_cc             Int                 @id @default(autoincrement())
+  ten_cc            String              @db.VarChar(50)
+  bang_tieng_anh_sv bang_tieng_anh_sv[]
+}
+
+model chuong_trinh_dao_tao {
+  ma_ctdt            String               @id @db.VarChar(50)
+  ma_khoa_sv         String               @db.VarChar(5)
+  loai_sv_ap_dung    String               @db.VarChar(4)
+  ma_chuyen_nganh    String               @default("") @db.VarChar(36)
+  ten_ctdt           String               @default("") @db.VarChar(100)
+  thoi_gian_bat_dau  DateTime?            @db.Date
+  thoi_gian_ket_thuc DateTime             @default(dbgenerated("('2030-08-01')")) @db.Date
+  thoi_gian_ap_dung  DateTime?            @db.Date
+  tong_tin_chi_ctdt  Int                  @default(0)
+  ghi_chu            String?              @db.VarChar(50)
+  chuyen_nganh       chuyen_nganh         @relation(fields: [ma_chuyen_nganh], references: [ma_chuyen_nganh], map: "FK_chuong_trinh_dao_tao_chuyen_nganh")
+  he_dao_tao         he_dao_tao           @relation(fields: [loai_sv_ap_dung], references: [ma_he_dao_tao], map: "FK_chuong_trinh_dao_tao_he_dao_tao")
+  khoa_sv            khoa_sv              @relation(fields: [ma_khoa_sv], references: [ma_khoa_sv], map: "FK_chuong_trinh_dao_tao_khoa_sv")
+  ke_hoach_giang_day ke_hoach_giang_day[]
+  sinh_vien          sinh_vien[]
+
+  @@index([ma_chuyen_nganh], map: "FK_chuong_trinh_dao_tao_chuyen_nganh")
+  @@index([loai_sv_ap_dung], map: "FK_chuong_trinh_dao_tao_he_dao_tao")
+  @@index([ma_khoa_sv], map: "FK_chuong_trinh_dao_tao_khoa_sv")
+}
+
+model chuyen_nganh {
+  ten_chuyen_nganh     String?                @db.VarChar(50)
+  ma_chuyen_nganh      String                 @id @default("") @db.VarChar(50)
+  ma_khoa              Int?
+  chuong_trinh_dao_tao chuong_trinh_dao_tao[]
+  khoa                 khoa?                  @relation(fields: [ma_khoa], references: [ma_khoa], onDelete: Restrict, map: "FK_chuyen_nganh_khoa")
+
+  @@index([ma_khoa], map: "FK_chuyen_nganh_khoa")
+}
+
+model chuyen_vien_phong_dao_tao {
+  ma_nguoi_dung Int        @id
+  nguoi_dung    nguoi_dung @relation(fields: [ma_nguoi_dung], references: [ma_nguoi_dung], map: "fk_ma_nguoi_dung_chuyen_vien_pdt")
+  lich_su       lich_su[]
+  ngoai_le      ngoai_le[] 
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model dia_diem_hoc {
+  ma_dia_diem          String                @id @default(uuid())
+  suc_chua             Int                   @default(20)
+  lich_lop_hoc         lich_lop_hoc[]
+  phong_hoc            phong_hoc?
+  phong_hoc_ngoai_troi phong_hoc_ngoai_troi?
+  phong_hoc_online     phong_hoc_online?
+}
+
+model dot_dang_ky_mon {
+  ma_dot_dk          String                   @db.VarChar(50)
+  ma_hoc_ky          String                   @db.VarChar(50)
+  ten_dot_dk         String                   @db.VarChar(50)
+  du_thinh           dot_dang_ky_mon_du_thinh
+  thoi_gian_bat_dau  DateTime                 @db.Date
+  thoi_gian_ket_thuc DateTime                 @db.Date
+  ma_lich_su         String                   @default("") @db.VarChar(36)
+  hoc_ky             hoc_ky                   @relation(fields: [ma_hoc_ky], references: [ma_hk], map: "FK_dot_dang_ky_mon_hoc_ky")
+  lich_su            lich_su                  @relation(fields: [ma_lich_su], references: [ma_lich_su], onDelete: NoAction, map: "FK_dot_dang_ky_mon_lich_su")
+  ket_qua_dk_mon     ket_qua_dk_mon[]
+  lop_hoc            lop_hoc[]
+  // @@unique([ma_dot_dk,ma_hoc_ky])
+  @@id([ma_dot_dk])
+  @@index([ma_hoc_ky], map: "FK_dot_dang_ky_mon_hoc_ky")
+  @@index([ma_lich_su], map: "FK_dot_dang_ky_mon_lich_su")
+}
+
+model giang_vien {
+  ma_nguoi_dung Int                 @id
+  bang_cap      String?             @db.VarChar(50)
+  hoc_vi        giang_vien_hoc_vi   @default(CuNhan)
+  hoc_ham       giang_vien_hoc_ham?
+  nguoi_dung    nguoi_dung          @relation(fields: [ma_nguoi_dung], references: [ma_nguoi_dung], onDelete: NoAction, map: "fk_ma_nguoi_dung_giang_vien")
+  sinh_vien     sinh_vien[]
+}
+
+model giang_vien_day_lop_hoc {
+  ma_gv   Int
+  ten_lop String  @db.VarChar(50)
+  ma_mon  String  @db.VarChar(50)
+  ma_hk   String  @db.VarChar(50)
+  lop_hoc lop_hoc @relation(fields: [ten_lop, ma_mon, ma_hk], references: [ten_lop, ma_mon, ma_hk], map: "FK_giang_vien_day_lop_hoc_lop_hoc")
+
+  @@id([ma_gv, ma_hk, ma_mon, ten_lop])
+  @@index([ten_lop, ma_mon, ma_hk], map: "FK_giang_vien_day_lop_hoc_lop_hoc")
+}
+
+model he_dao_tao {
+  ma_he_dao_tao        String                 @id @db.VarChar(4)
+  ten_he_dao_tao       String?                @db.VarChar(50)
+  chuong_trinh_dao_tao chuong_trinh_dao_tao[]
+  lop_hoc              lop_hoc[]
+  sinh_vien            sinh_vien[]
+  yeu_cau_anh_van      yeu_cau_anh_van[]
+}
+
+model hoc_ky {
+  ma_hk            String             @id @db.VarChar(10)
+  ten_hk           String?            @db.VarChar(30)
+  ngay_bat_dau     DateTime?          @db.Date
+  ngay_ket_thuc    DateTime?          @db.Date
+  bang_diem_hoc_ky bang_diem_hoc_ky[]
+  dot_dang_ky_mon  dot_dang_ky_mon[]
+  lop_hoc          lop_hoc[]
+}
+
+model ke_hoach_giang_day {
+  ma_ctdt              String                     @default("") @db.VarChar(50)
+  ma_mon               String                     @db.VarChar(10)
+  tu_chon              ke_hoach_giang_day_tu_chon
+  chuong_trinh_dao_tao chuong_trinh_dao_tao       @relation(fields: [ma_ctdt], references: [ma_ctdt], map: "FK_ke_hoach_giang_day_chuong_trinh_dao_tao")
+  mon_hoc              mon_hoc                    @relation(fields: [ma_mon], references: [ma_mon_hoc], map: "FK_ke_hoach_giang_day_mon_hoc")
+
+  @@id([ma_mon, ma_ctdt])
+  @@index([ma_ctdt], map: "FK_ke_hoach_giang_day_chuong_trinh_dao_tao")
+}
+
+model ket_qua_dk_mon {
+  ma_ket_qua_dkmh    Int                  @default(autoincrement())
+  ma_dot_dk          String               @db.VarChar(50)
+  ma_hoc_ky          String               @db.VarChar(50)
+  ma_sv              Int
+  tong_tin_chi       Int                  @default(0)
+  dot_dang_ky_mon    dot_dang_ky_mon      @relation(fields: [ma_dot_dk], references: [ma_dot_dk], map: "FK__dot_dang_ky_mon")
+  lop_hoc_sv_dang_ky lop_hoc_sv_dang_ky[]
+
+  @@id([ma_ket_qua_dkmh, ma_dot_dk, ma_hoc_ky, ma_sv])
+  @@index([ma_dot_dk, ma_hoc_ky], map: "FK__dot_dang_ky_mon")
+  @@index([ma_sv], map: "FK__sinh_vien")
+}
+
+model khoa {
+  ma_khoa      Int            @id @default(autoincrement())
+  ten_khoa     String         @db.VarChar(40)
+  chuyen_nganh chuyen_nganh[]
+  mon_hoc      mon_hoc[]
+  nguoi_dung   nguoi_dung[]
+}
+
+model khoa_sv {
+  ma_khoa_sv           String                 @id @default("None") @db.VarChar(5)
+  han_dao_tao          DateTime?              @db.Date
+  chuong_trinh_dao_tao chuong_trinh_dao_tao[]
+  sinh_vien            sinh_vien[]
+  yeu_cau_anh_van      yeu_cau_anh_van[]
+}
+
+model khuyen_nghi {
+  ma_mon                                 String  @db.VarChar(10)
+  ma_mon_kn                              String  @db.VarChar(10)
+  mon_hoc_khuyen_nghi_ma_monTomon_hoc    mon_hoc @relation("khuyen_nghi_ma_monTomon_hoc", fields: [ma_mon], references: [ma_mon_hoc], map: "khuyen_nghi_ibfk_1")
+  mon_hoc_khuyen_nghi_ma_mon_knTomon_hoc mon_hoc @relation("khuyen_nghi_ma_mon_knTomon_hoc", fields: [ma_mon_kn], references: [ma_mon_hoc], map: "khuyen_nghi_ibfk_2")
+
+  @@id([ma_mon, ma_mon_kn])
+  @@index([ma_mon_kn], map: "FK_tien_quyet_mon_hoc_2")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model lich_lop_hoc {
+  ma_lich                                       String @id @default(dbgenerated("(uuid())"))
+  ma_dia_diem                                   String
+  nam                                           Int                 @default(dbgenerated("(year(curdate()))")) @db.Year
+  tuan                                          Int
+  ngay                                          lich_lop_hoc_ngay
+  tiet_bat_dau                                  Int
+  tiet_ket_thuc                                 Int
+  ten_lop                                       String?             @db.VarChar(50)
+  ma_mon                                        String?             @db.VarChar(50)
+  ma_hk                                         String?             @db.VarChar(50)
+  dia_diem_hoc                                  dia_diem_hoc        @relation(fields: [ma_dia_diem], references: [ma_dia_diem], map: "FK_lich_lop_hoc_dia_diem_hoc")
+  lop_hoc                                       lop_hoc?            @relation(fields: [ten_lop, ma_mon, ma_hk], references: [ten_lop, ma_mon, ma_hk], onDelete: Restrict, map: "FK_lich_lop_hoc_lop_hoc")
+  tiet_hoc_lich_lop_hoc_tiet_bat_dauTotiet_hoc  tiet_hoc            @relation("lich_lop_hoc_tiet_bat_dauTotiet_hoc", fields: [tiet_bat_dau], references: [ma_tiet], map: "FK_lich_lop_hoc_tiet_hoc")
+  tiet_hoc_lich_lop_hoc_tiet_ket_thucTotiet_hoc tiet_hoc            @relation("lich_lop_hoc_tiet_ket_thucTotiet_hoc", fields: [tiet_ket_thuc], references: [ma_tiet], map: "FK_lich_lop_hoc_tiet_hoc_2")
+
+  @@index([ma_dia_diem], map: "FK_lich_lop_hoc_dia_diem_hoc")
+  @@index([ten_lop, ma_mon, ma_hk], map: "FK_lich_lop_hoc_lop_hoc")
+  @@index([tiet_bat_dau], map: "FK_lich_lop_hoc_tiet_hoc")
+  @@index([tiet_ket_thuc], map: "FK_lich_lop_hoc_tiet_hoc_2")
+
+}
+
+model lich_su {
+  ma_lich_su                String                     @id @default(uuid()) @db.VarChar(36)
+  ma_cvpdt                  Int?
+  hanh_dong                 String?                    @db.VarChar(50)
+  mo_ta                     String?                    @db.VarChar(50)
+  ngay_cap_nhat             DateTime?                  @db.Date
+  gia_tri_cu                String?                    @db.VarChar(50)
+  gia_tri_moi               String?                    @db.VarChar(50)
+  bang_tieng_anh_sv         bang_tieng_anh_sv[]
+  dot_dang_ky_mon           dot_dang_ky_mon[]
+  chuyen_vien_phong_dao_tao chuyen_vien_phong_dao_tao? @relation(fields: [ma_cvpdt], references: [ma_nguoi_dung], onDelete: Restrict, map: "FK_lich_su_chuyen_vien_phong_dao_tao")
+  ngoai_le                  ngoai_le[]                 
+
+  @@index([ma_cvpdt], map: "FK_lich_su_chuyen_vien_phong_dao_tao")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model link_hoc_online {
+  ma_dia_diem      String
+  link_cuoc_hop    String              @db.VarChar(50)
+  gioi_han_nguoi   Int                 @default(100)
+  phong_hoc_online phong_hoc_online    @relation(fields: [ma_dia_diem], references: [ma_dia_diem], map: "FK__phong_hoc_online")
+
+  @@id([ma_dia_diem, link_cuoc_hop, gioi_han_nguoi])
+  
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model loai_ngoai_le {
+  ma_loai_nl String @id @default(dbgenerated("(uuid())"))
+  ten        String              @db.VarChar(50)
+  mo_ta      String              @db.VarChar(50)
+  ngoai_le   ngoai_le[]
+
+
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model lop_hoc {
+  ten_lop                String                   @db.VarChar(50)
+  ma_mon                 String                   @db.VarChar(50)
+  ma_hk                  String                   @db.VarChar(50)
+  ma_dot_dk              String?                  @db.VarChar(50)
+  ma_he_dao_tao          String?                  @db.VarChar(50)
+  loai_lop               lop_hoc_loai_lop?        @default(CQ)
+  si_so_hien_tai         Int?
+  si_so_min              Int?
+  si_so_max              Int?
+  ten_lop_pt             String?                  @db.VarChar(50)
+  ma_mon_pt              String?                  @db.VarChar(50)
+  ma_hk_pt               String?                  @db.VarChar(50)
+  chi_tiet_diem_hk       chi_tiet_diem_hk[]
+  giang_vien_day_lop_hoc giang_vien_day_lop_hoc[]
+  lich_lop_hoc           lich_lop_hoc[]           
+  he_dao_tao             he_dao_tao?              @relation(fields: [ma_he_dao_tao], references: [ma_he_dao_tao], onDelete: Restrict, map: "FK__he_dao_tao")
+  dot_dang_ky_mon        dot_dang_ky_mon?         @relation(fields: [ma_dot_dk], references: [ma_dot_dk], onDelete: Restrict, map: "FK_lop_hoc_dot_dang_ky_mon")
+  hoc_ky                 hoc_ky                   @relation(fields: [ma_hk], references: [ma_hk], map: "FK_lop_hoc_hoc_ky")
+  lop_hoc                lop_hoc?                 @relation("lop_hocTolop_hoc", fields: [ten_lop_pt, ma_mon_pt, ma_hk_pt], references: [ten_lop, ma_mon, ma_hk], onDelete: Restrict, map: "FK_lop_hoc_lop_hoc")
+  other_lop_hoc          lop_hoc[]                @relation("lop_hocTolop_hoc")
+  mon_hoc                mon_hoc                  @relation(fields: [ma_mon], references: [ma_mon_hoc], map: "FK_lop_hoc_mon_hoc")
+  lop_hoc_sv_dang_ky     lop_hoc_sv_dang_ky[]
+
+  @@id([ten_lop, ma_mon, ma_hk])
+  @@index([ma_he_dao_tao], map: "FK__he_dao_tao")
+  @@index([ma_dot_dk], map: "FK_lop_hoc_dot_dang_ky_mon")
+  @@index([ma_hk], map: "FK_lop_hoc_hoc_ky")
+  @@index([ten_lop_pt, ma_mon_pt, ma_hk_pt], map: "FK_lop_hoc_lop_hoc")
+  @@index([ma_mon], map: "FK_lop_hoc_mon_hoc")
+}
+
+model lop_hoc_sv_dang_ky {
+  ten_lop_hoc    String         @db.VarChar(50)
+  ma_mon_hoc     String         @db.VarChar(50)
+  ma_hoc_ky      String         @db.VarChar(50)
+  ma_ket_qua     Int
+  ma_dot_dk      String         @db.VarChar(50)
+  ma_hoc_ky1     String         @db.VarChar(50)
+  ma_sv          Int
+  ket_qua_dk_mon ket_qua_dk_mon @relation(fields: [ma_ket_qua, ma_dot_dk, ma_hoc_ky1, ma_sv], references: [ma_ket_qua_dkmh, ma_dot_dk, ma_hoc_ky, ma_sv], map: "FK_lop_hoc_sv_dang_ky_ket_qua_dk_mon")
+  lop_hoc        lop_hoc        @relation(fields: [ten_lop_hoc, ma_mon_hoc, ma_hoc_ky], references: [ten_lop, ma_mon, ma_hk], map: "FK_lop_hoc_sv_dang_ky_lop_hoc")
+
+  @@id([ten_lop_hoc, ma_mon_hoc, ma_hoc_ky, ma_ket_qua, ma_dot_dk, ma_hoc_ky1, ma_sv])
+  @@index([ma_ket_qua, ma_dot_dk, ma_hoc_ky1, ma_sv], map: "FK_lop_hoc_sv_dang_ky_ket_qua_dk_mon")
+}
+
+model mon_hoc {
+  ma_mon_hoc                                 String               @id @db.VarChar(10)
+  ten_mon_hoc_VIE                            String               @db.Char(100)
+  ten_mon_hoc_ENG                            String               @db.Char(100)
+  ma_khoa                                    Int
+  tin_chi                                    Int
+  chuan_mon_hoc                              Int?                 @default(1)
+  co_lop_phu_thuoc                           Int?                 @default(0)
+  he_so_BT                                   Decimal              @default(0.00) @db.Decimal(3, 2)
+  he_so_BTL                                  Decimal              @default(0.00) @db.Decimal(3, 2)
+  he_so_TN                                   Decimal              @default(0.00) @db.Decimal(3, 2)
+  he_so_GK                                   Decimal              @default(0.00) @db.Decimal(3, 2)
+  he_so_CK                                   Decimal              @default(0.00) @db.Decimal(3, 2)
+  chi_tiet_diem_tk                           chi_tiet_diem_tk[]
+  ke_hoach_giang_day                         ke_hoach_giang_day[]
+  khuyen_nghi_khuyen_nghi_ma_monTomon_hoc    khuyen_nghi[]        @relation("khuyen_nghi_ma_monTomon_hoc")
+  khuyen_nghi_khuyen_nghi_ma_mon_knTomon_hoc khuyen_nghi[]        @relation("khuyen_nghi_ma_mon_knTomon_hoc")
+  lop_hoc                                    lop_hoc[]
+  khoa                                       khoa                 @relation(fields: [ma_khoa], references: [ma_khoa], map: "FK_monhoc_khoa")
+  song_hanh_song_hanh_ma_monTomon_hoc        song_hanh[]          @relation("song_hanh_ma_monTomon_hoc")
+  song_hanh_song_hanh_ma_mon_shTomon_hoc     song_hanh[]          @relation("song_hanh_ma_mon_shTomon_hoc")
+  tien_quyet_tien_quyet_ma_monTomon_hoc      tien_quyet[]         @relation("tien_quyet_ma_monTomon_hoc")
+  tien_quyet_tien_quyet_ma_mon_tqTomon_hoc   tien_quyet[]         @relation("tien_quyet_ma_mon_tqTomon_hoc")
+  tuong_duong_tuong_duong_ma_monTomon_hoc    tuong_duong[]        @relation("tuong_duong_ma_monTomon_hoc")
+  tuong_duong_tuong_duong_ma_mon_tdTomon_hoc tuong_duong[]        @relation("tuong_duong_ma_mon_tdTomon_hoc")
+
+  @@index([ma_khoa], map: "FK_monhoc_khoa")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model ngoai_le {
+  ma_nl                     String       @id @default(dbgenerated("(uuid())"))
+  ma_loai_nl                String
+  ma_lich_su                String                    @default("") @db.VarChar(36)
+  ma_sinh_vien              Int
+  ma_cvpdt                  Int
+  mo_ta                     String                    @db.VarChar(50)
+  ly_do                     String                    @db.VarChar(50)
+  ngay_ra_quyet_dinh        DateTime                  @default(dbgenerated("(curdate())")) @db.Date
+  chuyen_vien_phong_dao_tao chuyen_vien_phong_dao_tao @relation(fields: [ma_cvpdt], references: [ma_nguoi_dung], map: "FK_ngoai_le_chuyen_vien_phong_dao_tao")
+  lich_su                   lich_su                   @relation(fields: [ma_lich_su], references: [ma_lich_su], onDelete: NoAction, map: "FK_ngoai_le_lich_su")
+  loai_ngoai_le             loai_ngoai_le             @relation(fields: [ma_loai_nl], references: [ma_loai_nl], map: "FK_ngoai_le_loai_ngoai_le")
+  sinh_vien                 sinh_vien                 @relation(fields: [ma_sinh_vien], references: [ma_nguoi_dung], map: "FK_ngoai_le_sinh_vien")
+
+  @@index([ma_cvpdt], map: "FK_ngoai_le_chuyen_vien_phong_dao_tao")
+  @@index([ma_lich_su], map: "FK_ngoai_le_lich_su")
+  @@index([ma_loai_nl], map: "FK_ngoai_le_loai_ngoai_le")
+  @@index([ma_sinh_vien], map: "FK_ngoai_le_sinh_vien")
+  
+}
+
+model nguoi_dung {
+  ma_nguoi_dung             Int                        @id
+  ma_khoa                   Int?
+  ho                        String                     @db.VarChar(50)
+  ten                       String                     @db.VarChar(50)
+  email                     String                     @db.VarChar(100)
+  password                  String                     @db.VarChar(100)
+  gioi_tinh                 nguoi_dung_gioi_tinh
+  dia_chi                   String                     @db.VarChar(255)
+  sdt                       String                     @db.VarChar(12)
+  cccd                      String                     @db.VarChar(12)
+  ngay_sinh                 DateTime                   @db.Date
+  chuyen_vien_phong_dao_tao chuyen_vien_phong_dao_tao?
+  giang_vien                giang_vien?
+  khoa                      khoa?                      @relation(fields: [ma_khoa], references: [ma_khoa], map: "fk_ma_khoa")
+
+  @@unique([email])
+  @@index([ma_khoa], map: "fk_ma_khoa")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model phong_hoc {
+  ma_dia_diem  String  @id
+  ten          String               @db.VarChar(10)
+  toa          String               @db.VarChar(10)
+  co_so        phong_hoc_co_so      @default(CS_LTK)
+  tang         Int                  @default(0)
+  loai_phong   phong_hoc_loai_phong @default(LT)
+  soluong_bang Int                  @default(1)
+  soluong_ban  Int                  @default(10)
+  soluong_ghe  Int                  @default(20)
+  soluong_mic  Int                  @default(1)
+  dia_diem_hoc dia_diem_hoc         @relation(fields: [ma_dia_diem], references: [ma_dia_diem], map: "FK_phong_hoc_dia_diem_hoc")
+
+  
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model phong_hoc_ngoai_troi {
+  ma_dia_diem  String @id
+  ten          String              @default("") @db.VarChar(20)
+  dia_chi      String              @default("") @db.VarChar(20)
+  loai         String?             @db.VarChar(20)
+  dia_diem_hoc dia_diem_hoc        @relation(fields: [ma_dia_diem], references: [ma_dia_diem], map: "FK_phong_hoc_ngoai_troi_dia_diem_hoc")
+
+  
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model phong_hoc_online {
+  ma_dia_diem     String @id
+  link_hoc_online link_hoc_online[]
+  dia_diem_hoc    dia_diem_hoc        @relation(fields: [ma_dia_diem], references: [ma_dia_diem], map: "FK__dia_diem_hoc")
+}
+
+model sinh_vien {
+  ma_nguoi_dung        Int                   @id
+  ma_gvcn              Int
+  ma_he_dao_tao        String                @db.VarChar(4)
+  ma_khoa_sv           String                @db.VarChar(5)
+  ma_chuan_av          Int
+  ma_chuan_sv          Int                   @default(0)
+  ma_ctdt              String?               @db.VarChar(50)
+  ngay_ctxh            Int                   @default(0)
+  gpa_tichluy          Decimal?              @default(0.00) @db.Decimal(3, 2)
+  tinchi_tichluy       Int?                  @default(0)
+  ngay_nhap_hoc        DateTime?             @db.Date
+  han_dao_tao_sv       DateTime?             @db.Date
+  thoi_gian_bao_luu    DateTime?             @db.Date
+  bang_diem_hoc_ky     bang_diem_hoc_ky[]
+  bang_diem_tong_ket   bang_diem_tong_ket[]
+  bang_tieng_anh_sv    bang_tieng_anh_sv[]
+  ngoai_le             ngoai_le[]            
+  chuan_anh_van        chuan_anh_van         @relation(fields: [ma_chuan_av], references: [ma_chuan_anh_van], map: "FK_sinh_vien_chuan_anh_van")
+  chuan_sv             chuan_sv              @relation(fields: [ma_chuan_sv], references: [ma_chuan_sv], map: "FK_sinh_vien_chuan_sv")
+  chuong_trinh_dao_tao chuong_trinh_dao_tao? @relation(fields: [ma_ctdt], references: [ma_ctdt], onDelete: Restrict, map: "FK_sinh_vien_chuong_trinh_dao_tao")
+  giang_vien           giang_vien            @relation(fields: [ma_gvcn], references: [ma_nguoi_dung], map: "FK_sinh_vien_giang_vien")
+  he_dao_tao           he_dao_tao            @relation(fields: [ma_he_dao_tao], references: [ma_he_dao_tao], map: "FK_sinh_vien_he_dao_tao")
+  khoa_sv              khoa_sv               @relation(fields: [ma_khoa_sv], references: [ma_khoa_sv], map: "FK_sinh_vien_khoa_sv")
+
+  @@index([ma_chuan_av], map: "FK_sinh_vien_chuan_anh_van")
+  @@index([ma_chuan_sv], map: "FK_sinh_vien_chuan_sv")
+  @@index([ma_ctdt], map: "FK_sinh_vien_chuong_trinh_dao_tao")
+  @@index([ma_gvcn], map: "FK_sinh_vien_giang_vien")
+  @@index([ma_he_dao_tao], map: "FK_sinh_vien_he_dao_tao")
+  @@index([ma_khoa_sv], map: "FK_sinh_vien_khoa_sv")
+}
+
+model song_hanh {
+  ma_mon                               String  @db.VarChar(10)
+  ma_mon_sh                            String  @db.VarChar(10)
+  mon_hoc_song_hanh_ma_monTomon_hoc    mon_hoc @relation("song_hanh_ma_monTomon_hoc", fields: [ma_mon], references: [ma_mon_hoc], map: "song_hanh_ibfk_1")
+  mon_hoc_song_hanh_ma_mon_shTomon_hoc mon_hoc @relation("song_hanh_ma_mon_shTomon_hoc", fields: [ma_mon_sh], references: [ma_mon_hoc], map: "song_hanh_ibfk_2")
+
+  @@id([ma_mon, ma_mon_sh])
+  @@index([ma_mon_sh], map: "FK_tien_quyet_mon_hoc_2")
+}
+
+model tien_quyet {
+  ma_mon                                String  @db.VarChar(10)
+  ma_mon_tq                             String  @db.VarChar(10)
+  mon_hoc_tien_quyet_ma_monTomon_hoc    mon_hoc @relation("tien_quyet_ma_monTomon_hoc", fields: [ma_mon], references: [ma_mon_hoc], map: "FK_tien_quyet_mon_hoc")
+  mon_hoc_tien_quyet_ma_mon_tqTomon_hoc mon_hoc @relation("tien_quyet_ma_mon_tqTomon_hoc", fields: [ma_mon_tq], references: [ma_mon_hoc], map: "FK_tien_quyet_mon_hoc_2")
+
+  @@id([ma_mon, ma_mon_tq])
+  @@index([ma_mon_tq], map: "FK_tien_quyet_mon_hoc_2")
+}
+
+model tiet_hoc {
+  ma_tiet                                           Int            @id
+  gio_bat_dau                                       DateTime       @db.Time(0)
+  gio_ket_thuc                                      DateTime       @db.Time(0)
+  giao_lao                                          DateTime       @default(dbgenerated("('00:10:00')")) @db.Time(0)
+  buoi                                              tiet_hoc_buoi  @default(Sang)
+  lich_lop_hoc_lich_lop_hoc_tiet_bat_dauTotiet_hoc  lich_lop_hoc[] @relation("lich_lop_hoc_tiet_bat_dauTotiet_hoc") 
+  lich_lop_hoc_lich_lop_hoc_tiet_ket_thucTotiet_hoc lich_lop_hoc[] @relation("lich_lop_hoc_tiet_ket_thucTotiet_hoc") 
+}
+
+model tuong_duong {
+  ma_mon                                 String  @db.VarChar(10)
+  ma_mon_td                              String  @db.VarChar(10)
+  mon_hoc_tuong_duong_ma_monTomon_hoc    mon_hoc @relation("tuong_duong_ma_monTomon_hoc", fields: [ma_mon], references: [ma_mon_hoc], map: "tuong_duong_ibfk_1")
+  mon_hoc_tuong_duong_ma_mon_tdTomon_hoc mon_hoc @relation("tuong_duong_ma_mon_tdTomon_hoc", fields: [ma_mon_td], references: [ma_mon_hoc], map: "tuong_duong_ibfk_2")
+
+  @@id([ma_mon, ma_mon_td])
+  @@index([ma_mon_td], map: "FK_tien_quyet_mon_hoc_2")
+}
+
+model yeu_cau_anh_van {
+  ma_chuan_anh_van Int
+  ma_he_dao_tao    String        @db.VarChar(4)
+  ma_khoa_sv       String        @db.VarChar(3)
+  ten_chung_chi    String        @db.VarChar(10)
+  diem_toi_thieu   Decimal?      @db.Decimal(4, 1)
+  he_dao_tao       he_dao_tao    @relation(fields: [ma_he_dao_tao], references: [ma_he_dao_tao], map: "FK_yeu_cau_anh_van_he_dao_tao")
+  khoa_sv          khoa_sv       @relation(fields: [ma_khoa_sv], references: [ma_khoa_sv], map: "FK_yeu_cau_anh_van_khoa_sv")
+  chuan_anh_van    chuan_anh_van @relation(fields: [ma_chuan_anh_van], references: [ma_chuan_anh_van], map: "fk_ma_chuan_anh_van_yeu_cau_anh_van")
+
+  @@id([ma_chuan_anh_van, ma_he_dao_tao, ma_khoa_sv, ten_chung_chi])
+  @@index([ma_he_dao_tao], map: "FK_yeu_cau_anh_van_he_dao_tao")
+  @@index([ma_khoa_sv], map: "FK_yeu_cau_anh_van_khoa_sv")
+}
+
+enum giang_vien_hoc_vi {
+  ThacSi @map("Thạc sĩ")
+  TienSi @map("Tiến sĩ")
+  CuNhan @map("Cử nhân")
+  KiSu  @map("Kỹ sư")
+}
+
+enum ke_hoach_giang_day_tu_chon {
+  Y
+  N
+}
+
+enum dot_dang_ky_mon_du_thinh {
+  Y
+  N
+}
+
+enum giang_vien_hoc_ham {
+  GiaoSu     @map("Giáo sư")
+  PhoGiaoSu @map("Phó giáo sư")
+}
+
+enum phong_hoc_co_so {
+  CS_LTK
+  CS_DiAn
+}
+
+enum lich_lop_hoc_ngay {
+  MON  @map("2")
+  TUE @map("3")
+  WED @map("4")
+  THU @map("5")
+  FRI @map("6")
+  SAT @map("7")
+  SUN @map("CN")
+}
+
+enum tiet_hoc_buoi {
+  Sang  @map("Sáng")
+  Chieu @map("Chiều")
+  Toi   @map("Tối")
+}
+
+enum lop_hoc_loai_lop {
+  CQ
+  DT
+}
+
+enum phong_hoc_loai_phong {
+  LT
+  TN
+}
+
+enum bang_tieng_anh_sv_trang_thai {
+  Y
+  N
+}
+
+enum nguoi_dung_gioi_tinh {
+  Nam @map("Nam")
+  Nu  @map("Nữ")
 }

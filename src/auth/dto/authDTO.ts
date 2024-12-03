@@ -1,5 +1,5 @@
 export class AuthInput {
-  username: string;
+  username: number;
   password: string;
   role: string;
 }
