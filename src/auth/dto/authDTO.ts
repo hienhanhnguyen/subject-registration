@@ -1,5 +1,9 @@
+import { IsEmail, IsString } from 'class-validator';
+
 export class AuthInput {
-  username: number;
+  @IsEmail()
+  email: string;
+
+  @IsString()
   password: string;
-  role: string;
 }

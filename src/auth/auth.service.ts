@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuthInput } from './dto/authDTO';
@@ -12,16 +16,31 @@ export class AuthService {
     private config: ConfigService,
   ) {}
 
+  private determineRole(ma_nguoi_dung: number): string {
+    const ma_nguoi_dung_str = ma_nguoi_dung.toString();
+    console.log(ma_nguoi_dung_str);
+    if (ma_nguoi_dung_str.length === 7) {
+      return 'student';
+    } else if (ma_nguoi_dung_str.startsWith('99')) {
+      return 'admin';
+    }
+    return 'unknown';
+  }
+
   async validateUser(input: AuthInput): Promise<any> {
-    const user = await this.prisma.nguoi_dung.findUnique({
-      where: { ma_nguoi_dung: input.username },
+    const user = await this.prisma.nguoi_dung.findFirst({
+      where: { email: input.email },
     });
 
     if (user && user.password === input.password) {
+      const userRole = this.determineRole(user.ma_nguoi_dung);
+      if (userRole == 'unknown') {
+        throw new ForbiddenException('This site is not intended for this user');
+      }
       //   const payload = { username: user.username, sub: user.id };
-      const access_token = await this.signToken(user.ma_nguoi_dung);
+      const access_token = await this.signToken(user.ma_nguoi_dung, userRole);
       console.log(access_token);
-      return { access_token: access_token, username: user.ma_nguoi_dung };
+      return { access_token: access_token };
     }
     return null;
   }
@@ -34,8 +53,8 @@ export class AuthService {
     //   },
     // });
   }
-  async signToken(username: number): Promise<string> {
-    const payload = { username: username }; //sub: a convention for the subject of the token
+  async signToken(username: number, role: string): Promise<string> {
+    const payload = { username: username, role: role }; //sub: a convention for the subject of the token
     const secret = this.config.get('JWT_SECRET');
     console.log(secret);
     const token = await this.jwtService.signAsync(payload, {
