@@ -13,23 +13,23 @@ export function LoginPage({ onLogin }: LoginPageProps) {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    // Mock data để test
+    // Mock login logic
     if (username === "student" && password === "password") {
       onLogin({
         id: 1,
         username: "student",
         role: "student",
-        name: "Sinh vien",
+        name: "Sinh viên",
       });
     } else if (username === "admin" && password === "password") {
       onLogin({
         id: 2,
         username: "admin",
         role: "admin",
-        name: "Chuyen vien PDT",
+        name: "Chuyên viên PDT",
       });
     } else {
-      setError("Invalid credentials");
+      setError("Tên đăng nhập hoặc mật khẩu không đúng");
     }
   };
 
@@ -52,7 +52,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                 htmlFor="username"
                 className="block text-sm font-medium text-gray-700"
               >
-                Username
+                Tên đăng nhập
               </label>
               <div className="mt-1">
                 <input
@@ -72,7 +72,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                 htmlFor="password"
                 className="block text-sm font-medium text-gray-700"
               >
-                Password
+                Mật khẩu
               </label>
               <div className="mt-1">
                 <input
@@ -87,7 +87,9 @@ export function LoginPage({ onLogin }: LoginPageProps) {
               </div>
             </div>
 
-            {error && <div className="text-red-600 text-sm">{error}</div>}
+            {error && (
+              <div className="text-red-600 text-sm text-center">{error}</div>
+            )}
 
             <div>
               <button
