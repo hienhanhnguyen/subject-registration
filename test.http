@@ -21,7 +21,7 @@ Content-Type: application/json
 GET https://dkmh.onrender.com/api/v1/user-profile
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6MjIxMjk3MSwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3MzM3MTI4NTIsImV4cCI6MTczMzcxNjQ1Mn0.5sXU-ywz2cnYTCQJNFJ3IvjpcTLdZlJrIijKHcYjWCE
 
-###
+### update for student role only
 PUT http://localhost:3000/api/v1/user-profile
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6MjIxMjM1Miwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3MzMyOTM0MTIsImV4cCI6MTczMzI5NzAxMn0.bN-K55BD48AQuDhKa6oB9KJ6uJVguquiriKSPpQ7Ask
@@ -37,15 +37,24 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6MjIxM
 ### lay tat ca dot dang ky
 GET http://localhost:3000/api/v1/subject-registration
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6MjIxMjM1Miwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3MzMyOTM0MTIsImV4cCI6MTczMzI5NzAxMn0.bN-K55BD48AQuDhKa6oB9KJ6uJVguquiriKSPpQ7Ask
+
+### lay tat ca mon va info da dang ky
+GET http://localhost:3000/api/v1/subject-registration/registered_class?ma_dot_dk=DK_HK231_D3&ma_hk=HK231
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6MjIxMjM1Miwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3MzMyOTM0MTIsImV4cCI6MTczMzI5NzAxMn0.bN-K55BD48AQuDhKa6oB9KJ6uJVguquiriKSPpQ7Ask
 
 ### kiem tra ngay gio dang ky hop le cua sinh vien
 GET http://localhost:3000/api/v1/subject-registration/checkvalidtimerange/DK_HK242_D2
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6MjIxMjM1Miwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3MzMyOTM0MTIsImV4cCI6MTczMzI5NzAxMn0.bN-K55BD48AQuDhKa6oB9KJ6uJVguquiriKSPpQ7Ask
 
 
 ### lay chi tiet lop hoc
-GET http://localhost:3000/api/v1/subject-registration/search_subject/PH1003
+GET http://localhost:3000/api/v1/subject-registration/search_subject?ma_mon_hoc=PH1003&ma_dot_dk=DK_HK233_D3
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6MjIxMjM1Miwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3MzMyOTM0MTIsImV4cCI6MTczMzI5NzAxMn0.bN-K55BD48AQuDhKa6oB9KJ6uJVguquiriKSPpQ7Ask
 
-### lay chi tiet lop hoc trong mon hoc trong 1 dot dang ky
+### lay chi tiet lop hoc trong mon hoc
 GET http://localhost:3000/api/v1/subject-registration/class_details?ma_dot_dk=DK_HK233_D3&ma_hk=HK233&ma_mon=PH1003
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6MjIxMjM1Miwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3MzMyOTM0MTIsImV4cCI6MTczMzI5NzAxMn0.bN-K55BD48AQuDhKa6oB9KJ6uJVguquiriKSPpQ7Ask

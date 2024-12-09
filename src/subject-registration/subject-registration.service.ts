@@ -2,10 +2,11 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 @Injectable()
 export class SubjectRegistrationService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
-  async getClasses(inTenLop: string, inMaMon: string, inMaHk: string) {
+  async getClasseDetails(inTenLop: string, inMaMon: string, inMaHk: string) {
     try {
+      console.log(inTenLop, inMaMon, inMaHk);
       // Fetch class information along with schedule
       const classInfo = await this.prisma.lop_hoc.findFirst({
         where: {
@@ -86,10 +87,7 @@ export class SubjectRegistrationService {
     }
   }
   async getAllRegistrations() {
-    const rawResult = await this.prisma.$queryRaw<
-      any[]
-    >`CALL GetDotDangKyMon();`;
-
+    const rawResult = await this.prisma.$queryRaw<any[]>`CALL GetDotDangKyMon();`;
     // Map the raw result to meaningful field names
     const mappedResult = rawResult.map((row) => ({
       ma_dot_dk: row.f0,
@@ -116,6 +114,24 @@ export class SubjectRegistrationService {
         tong_tin_chi: true,
       },
     });
+    return result;
+  }
+
+  async getClassInOneRegistration(ma_dot_dk: string, ma_hoc_ky: string, mssv: number) {
+    const results = await this.prisma.lop_hoc_sv_dang_ky.findMany({
+      where: {
+        ma_dot_dk: ma_dot_dk,
+        ma_hoc_ky: ma_hoc_ky,
+        ma_sv: mssv,
+      },
+      select: {
+        ten_lop_hoc: true,
+        ma_mon_hoc: true,
+        ma_hoc_ky: true,
+      },
+    });
+    console.log(results);
+    return results;
   }
   async getRegistrationPeriod(ma_dot_dk: string) {
     const result = await this.prisma.dot_dang_ky_mon.findUnique({
@@ -130,23 +146,47 @@ export class SubjectRegistrationService {
 
     return result;
   }
-  async searchSubject(searchTerm: string) {
+  async searchSubject(subjectName: string, ma_dot_dk: string) {
+    if (subjectName === "") {
+      // Return all records if the search term is an empty string
+      return await this.prisma.mon_hoc.findMany({
+        select: {
+          ma_mon_hoc: true,
+          ten_mon_hoc_VIE: true,
+          ten_mon_hoc_ENG: true,
+          tin_chi: true,
+        },
+      });
+    }
+
+    // Perform search with the given search term and filter by ma_dot_dk
     const results = await this.prisma.mon_hoc.findMany({
       where: {
-        OR: [
+        AND: [
           {
-            ma_mon_hoc: {
-              contains: searchTerm,
-            },
+            OR: [
+              {
+                ma_mon_hoc: {
+                  contains: subjectName,
+                },
+              },
+              {
+                ten_mon_hoc_VIE: {
+                  contains: subjectName,
+                },
+              },
+              {
+                ten_mon_hoc_ENG: {
+                  contains: subjectName,
+                },
+              },
+            ],
           },
           {
-            ten_mon_hoc_VIE: {
-              contains: searchTerm,
-            },
-          },
-          {
-            ten_mon_hoc_ENG: {
-              contains: searchTerm,
+            lop_hoc: {
+              some: {
+                ma_dot_dk: ma_dot_dk,
+              },
             },
           },
         ],
@@ -161,7 +201,7 @@ export class SubjectRegistrationService {
 
     return results;
   }
-  async getClassDetails(ma_dot_dk: string, ma_hk: string, ma_mon: string) {
+  async getClasses(ma_dot_dk: string, ma_hk: string, ma_mon: string) {
     const results = await this.prisma.lop_hoc.findMany({
       where: {
         ma_dot_dk: ma_dot_dk,
