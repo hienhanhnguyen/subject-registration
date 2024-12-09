@@ -7,6 +7,7 @@ import {
   CalendarRange,
   Users,
   LogOut,
+  User,
 } from "lucide-react";
 
 interface NavItem {
@@ -44,6 +45,11 @@ export function Layout({
           icon: <GraduationCap />,
           label: "Bảng điểm",
           value: "transcript",
+        },
+        {
+          icon: <User />,
+          label: "Thông tin cá nhân",
+          value: "profile",
         },
       ];
     } else {
@@ -105,7 +111,9 @@ export function Layout({
             </a>
           ))}
           <a
-            onClick={onLogout}
+            onClick={() => {
+              onLogout();
+            }}
             className="flex items-center px-4 py-3 cursor-pointer text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors mt-auto"
           >
             <span className="p-2">

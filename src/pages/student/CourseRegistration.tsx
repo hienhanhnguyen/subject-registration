@@ -1,11 +1,16 @@
-import React, { useState } from 'react';
-import { RegistrationPeriods } from '../../components/RegistrationPeriods';
-import { CourseSearch } from '../../components/CourseSearch';
-import { RegistrationPeriod } from '../../types';
+import React, { useState } from "react";
+import { RegistrationPeriods } from "../../components/RegistrationPeriods";
+import { CourseSearch } from "../../components/CourseSearch";
+import { RegistrationPeriod } from "../../services/api";
 
 export function CourseRegistration() {
-  const [selectedPeriod, setSelectedPeriod] = useState<RegistrationPeriod | null>(null);
+  const [selectedPeriod, setSelectedPeriod] =
+    useState<RegistrationPeriod | null>(null);
   const [searchResults, setSearchResults] = useState<any[] | null>(null);
+
+  const handlePeriodSelect = (period: RegistrationPeriod) => {
+    setSelectedPeriod(period);
+  };
 
   return (
     <div className="p-6">
@@ -20,7 +25,7 @@ export function CourseRegistration() {
           onSearch={setSearchResults}
         />
       ) : (
-        <RegistrationPeriods onPeriodSelect={setSelectedPeriod} />
+        <RegistrationPeriods onPeriodSelect={handlePeriodSelect} />
       )}
     </div>
   );

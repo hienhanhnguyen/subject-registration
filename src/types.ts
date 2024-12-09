@@ -16,14 +16,6 @@ export interface Admin extends User {
   department: string;
 }
 
-export interface RegistrationPeriod {
-  id: number;
-  department: string;
-  startDate: string;
-  endDate: string;
-  status: 'active' | 'upcoming' | 'ended';
-}
-
 export interface Course {
   id: number;
   code: string;

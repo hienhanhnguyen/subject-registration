@@ -1,35 +1,44 @@
 import React, { useState } from "react";
 import { User } from "../types";
 import { BookOpen } from "lucide-react";
+import { loginUser } from "../services/api";
 
 interface LoginPageProps {
   onLogin: (user: User) => void;
 }
 
 export function LoginPage({ onLogin }: LoginPageProps) {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Mock login logic
-    if (username === "student" && password === "password") {
-      onLogin({
-        id: 1,
-        username: "student",
-        role: "student",
-        name: "Sinh viên",
-      });
-    } else if (username === "admin" && password === "password") {
-      onLogin({
-        id: 2,
-        username: "admin",
-        role: "admin",
-        name: "Chuyên viên PDT",
-      });
-    } else {
-      setError("Tên đăng nhập hoặc mật khẩu không đúng");
+    setError("");
+    setIsLoading(true);
+
+    try {
+      console.log("Starting login process...");
+      const response = await loginUser(email, password);
+      console.log("Login response:", response);
+
+      if (response.success && response.data) {
+        const { user } = response.data;
+        const userWithDefaultName = { ...user, name: user.name || "" };
+        onLogin(userWithDefaultName);
+      } else {
+        setError(response.message || "Đăng nhập thất bại. Vui lòng thử lại.");
+      }
+    } catch (err) {
+      console.error("Login error:", err);
+      setError(
+        err instanceof Error
+          ? `Lỗi: ${err.message}`
+          : "Có lỗi xảy ra khi đăng nhập. Vui lòng thử lại sau."
+      );
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -49,19 +58,19 @@ export function LoginPage({ onLogin }: LoginPageProps) {
           <form className="space-y-6" onSubmit={handleLogin}>
             <div>
               <label
-                htmlFor="username"
+                htmlFor="email"
                 className="block text-sm font-medium text-gray-700"
               >
-                Tên đăng nhập
+                Email
               </label>
               <div className="mt-1">
                 <input
-                  id="username"
-                  name="username"
-                  type="text"
+                  id="email"
+                  name="email"
+                  type="email"
                   required
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                 />
               </div>
@@ -94,9 +103,15 @@ export function LoginPage({ onLogin }: LoginPageProps) {
             <div>
               <button
                 type="submit"
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                disabled={isLoading}
+                className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white 
+                  ${
+                    isLoading
+                      ? "bg-indigo-400 cursor-not-allowed"
+                      : "bg-indigo-600 hover:bg-indigo-700"
+                  } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
               >
-                Đăng nhập
+                {isLoading ? "Đang đăng nhập..." : "Đăng nhập"}
               </button>
             </div>
           </form>
