@@ -14,7 +14,7 @@ export class AuthService {
     private jwtService: JwtService,
     private prisma: PrismaService,
     private config: ConfigService,
-  ) {}
+  ) { }
 
   private determineRole(ma_nguoi_dung: number): string {
     const ma_nguoi_dung_str = ma_nguoi_dung.toString();
@@ -59,7 +59,7 @@ export class AuthService {
     console.log(secret);
     const token = await this.jwtService.signAsync(payload, {
       secret,
-      expiresIn: '1m',
+      expiresIn: '1h',
     }); //signAsync because it easier to catch error
     console.log(token);
     return token; // return an object

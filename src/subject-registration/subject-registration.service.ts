@@ -4,6 +4,19 @@ import { PrismaService } from "src/prisma/prisma.service";
 export class SubjectRegistrationService {
   constructor(private prisma: PrismaService) { }
 
+  async getClassDetails1(inTenLop: string, inMaMon: string, inMaHk: string) {
+    try {
+      const result = await this.prisma.$queryRaw<any[]>`CALL GetThongTinLopHoc(${inTenLop}, ${inMaMon}, ${inMaHk});`;
+      if (result.length === 0) {
+        throw new Error("Class not found");
+      }
+      return result;
+    } catch (error) {
+      console.error(error);
+      throw new Error("Error fetching class information");
+    }
+  }
+
   async getClasseDetails(inTenLop: string, inMaMon: string, inMaHk: string) {
     try {
       console.log(inTenLop, inMaMon, inMaHk);
@@ -86,6 +99,7 @@ export class SubjectRegistrationService {
       throw new Error("Error fetching class information");
     }
   }
+
   async getAllRegistrations() {
     const rawResult = await this.prisma.$queryRaw<any[]>`CALL GetDotDangKyMon();`;
     // Map the raw result to meaningful field names
@@ -118,20 +132,28 @@ export class SubjectRegistrationService {
   }
 
   async getClassInOneRegistration(ma_dot_dk: string, ma_hoc_ky: string, mssv: number) {
-    const results = await this.prisma.lop_hoc_sv_dang_ky.findMany({
-      where: {
-        ma_dot_dk: ma_dot_dk,
-        ma_hoc_ky: ma_hoc_ky,
-        ma_sv: mssv,
-      },
-      select: {
-        ten_lop_hoc: true,
-        ma_mon_hoc: true,
-        ma_hoc_ky: true,
-      },
-    });
-    console.log(results);
-    return results;
+    // const results = await this.prisma.lop_hoc_sv_dang_ky.findMany({
+    //   where: {
+    //     ma_dot_dk: ma_dot_dk,
+    //     ma_hoc_ky: ma_hoc_ky,
+    //     ma_sv: mssv,
+    //   },
+    //   select: {
+    //     ten_lop_hoc: true,
+    //     ma_mon_hoc: true,
+    //     ma_hoc_ky: true,
+    //     ma_dot_dk: true,
+    //   },
+    // });
+    const results = await this.prisma.$queryRaw<any[]>`CALL GetLopHocSvDangKy(${ma_dot_dk}, ${ma_hoc_ky}, ${mssv});`;
+    const mappedResults = results.map(row => ({
+      ten_lop_hoc: row.f0,
+      ma_mon_hoc: row.f1,
+      ma_hoc_ky: row.f2,
+    }));
+
+    return mappedResults;
+
   }
   async getRegistrationPeriod(ma_dot_dk: string) {
     const result = await this.prisma.dot_dang_ky_mon.findUnique({
@@ -201,7 +223,7 @@ export class SubjectRegistrationService {
 
     return results;
   }
-  async getClasses(ma_dot_dk: string, ma_hk: string, ma_mon: string) {
+  async getClassesAvailableInSubject(ma_dot_dk: string, ma_hk: string, ma_mon: string) {
     const results = await this.prisma.lop_hoc.findMany({
       where: {
         ma_dot_dk: ma_dot_dk,
@@ -216,6 +238,25 @@ export class SubjectRegistrationService {
     });
 
     return results;
+  }
+
+  async registerStudentForClass(ma_sv: number, ma_dot_dk: string, ten_lop: string, ma_mon: string, ma_hk: string) {
+    try {
+      await this.prisma.$executeRaw`CALL SVChonLopHoc(${ma_sv}, ${ma_dot_dk}, ${ten_lop}, ${ma_mon}, ${ma_hk});`;
+      return { message: "Student registered for class successfully" };
+    } catch (error) {
+      console.error(error);
+      throw new Error("Error registering student for class");
+    }
+  }
+  async unregisterStudentFromClass(ma_sv: number, ma_dot_dk: string, ten_lop: string, ma_mon: string, ma_hk: string) {
+    try {
+      await this.prisma.$executeRaw`CALL SVXoaLopHoc(${ma_sv}, ${ma_dot_dk}, ${ten_lop}, ${ma_mon}, ${ma_hk});`;
+      return { message: "Student unregistered from class successfully" };
+    } catch (error) {
+      console.error(error);
+      throw new Error("Error unregistering student from class");
+    }
   }
 }
 // async function testFunction() {

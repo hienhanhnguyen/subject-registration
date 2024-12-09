@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query } from "@nestjs/common";
+import { Controller, Get, Param, Post, Query } from "@nestjs/common";
 import { SubjectRegistrationService } from "./subject-registration.service";
 import { JwtGuard } from "src/auth/jwt.guard";
 import { UseGuards, Request } from "@nestjs/common";
@@ -37,7 +37,8 @@ export class SubjectRegistrationController {
   ) {
 
     try {
-      const mssv = req.user.mssv;
+      const mssv = req.user.ma_nguoi_dung;
+      console.log(mssv, ma_dot_dk, ma_hoc_ky);
       const creadit = await this.subjectRegistrationService.getCreditInOneRegistration(ma_dot_dk, ma_hoc_ky, mssv);
       const classInfo = await this.subjectRegistrationService.getClassInOneRegistration(ma_dot_dk, ma_hoc_ky, mssv);
       let classDetails = [];
@@ -125,7 +126,7 @@ export class SubjectRegistrationController {
   async getClassDetails(@Query("ma_dot_dk") ma_dot_dk: string, @Query("ma_hk") ma_hk: string, @Query("ma_mon") ma_mon: string,
   ) {
     try {
-      const results = await this.subjectRegistrationService.getClasses(
+      const results = await this.subjectRegistrationService.getClassesAvailableInSubject(
         ma_dot_dk,
         ma_hk,
         ma_mon,
@@ -143,4 +144,31 @@ export class SubjectRegistrationController {
       };
     }
   }
+
+  // @Post("register_class")
+  // async registerClass(
+  //   @Query("ma_lop_hoc") ma_lop_hoc: string,
+  //   @Query("ma_dot_dk") ma_dot_dk: string,
+  //   @Request() req,
+  // ) {
+  //   try {
+  //     const mssv = req.user.mssv;
+  //     const result = await this.subjectRegistrationService.registerClass(
+  //       ma_lop_hoc,
+  //       ma_dot_dk,
+  //       mssv,
+  //     );
+  //     return {
+  //       error: false,
+  //       message: "success",
+  //       data: result,
+  //     };
+  //   } catch (error) {
+  //     return {
+  //       error: true,
+  //       message: error.message,
+  //       data: null,
+  //     };
+  //   }
+  // }
 }

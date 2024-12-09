@@ -3,7 +3,7 @@ POST https://dkmh.onrender.com/api/v1/auth/login
 Content-Type: application/json
 
 {
-    "email": "huynhduc.tai@hcmut.edu.vn",
+    "email": "hothanhnhanhot@gmail.com",
     "password": "12345678"
 }
 
@@ -13,7 +13,7 @@ POST http://localhost:3000/api/v1/auth/login
 Content-Type: application/json
 
 {
-    "email": "huynhduc.tai@hcmut.edu.vn",
+    "email": "huynhthiminh.tam@hcmut.edu.vn",
     "password": "12345678"
 }
 
@@ -27,7 +27,7 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6MjIxMjM1Miwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3MzMyOTM0MTIsImV4cCI6MTczMzI5NzAxMn0.bN-K55BD48AQuDhKa6oB9KJ6uJVguquiriKSPpQ7Ask
 
 {
-    "email": "hothanhnhanhot@gmail.com",
+    "email": "hothanhnhan1106@gmail.com",
     "dia_chi": "updateDTO.dia_chi",
     "sdt": "0976481171",
     "cccd": "054204003408",
@@ -42,7 +42,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6MjIxM
 ### lay tat ca mon va info da dang ky
 GET http://localhost:3000/api/v1/subject-registration/registered_class?ma_dot_dk=DK_HK231_D3&ma_hk=HK231
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6MjIxMjM1Miwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3MzMyOTM0MTIsImV4cCI6MTczMzI5NzAxMn0.bN-K55BD48AQuDhKa6oB9KJ6uJVguquiriKSPpQ7Ask
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6MjIxMzAxMywicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3MzM3NjI3OTgsImV4cCI6MTczMzc2NjM5OH0.U7z3brD31-4bziQYE7Cu-3EZzw6yM7iIIVVdE_Y70mo
 
 ### kiem tra ngay gio dang ky hop le cua sinh vien
 GET http://localhost:3000/api/v1/subject-registration/checkvalidtimerange/DK_HK242_D2
