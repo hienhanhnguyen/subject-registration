@@ -59,7 +59,7 @@ export class AuthService {
     console.log(secret);
     const token = await this.jwtService.signAsync(payload, {
       secret,
-      expiresIn: '1h',
+      expiresIn: '1m',
     }); //signAsync because it easier to catch error
     console.log(token);
     return token; // return an object

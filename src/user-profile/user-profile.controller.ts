@@ -15,6 +15,7 @@ import { RolesGuard } from '../auth/role.guard';
 import { Role } from 'src/auth/decorators/role.decorator';
 import { UpdateDTO } from './dto/updateDTO';
 import { stat } from 'fs';
+import { error } from 'console';
 @Controller('user-profile')
 @UseGuards(JwtGuard, RolesGuard)
 @Role('student')
@@ -29,7 +30,11 @@ export class UserProfileController {
       if (!profile) {
         throw new HttpException('Profile not found', HttpStatus.NOT_FOUND);
       }
-      return profile;
+      return {
+        error: false,
+        message: 'success',
+        data: profile,
+      };
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }

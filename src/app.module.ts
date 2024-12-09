@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { UserProfileModule } from './user-profile/user-profile.module';
+import { SubjectRegistrationModule } from './subject-registration/subject-registration.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { UserProfileModule } from './user-profile/user-profile.module';
     PrismaModule,
     AuthModule,
     UserProfileModule,
+    SubjectRegistrationModule,
   ],
   controllers: [AppController, AuthController],
   providers: [AppService, AuthService, JwtService],
