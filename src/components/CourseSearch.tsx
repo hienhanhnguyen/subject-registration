@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   Search,
   ArrowLeft,
@@ -14,6 +14,8 @@ import {
   Subject,
   searchSubject,
   getClassDetails,
+  ClassInfo,
+  registerClass,
 } from "../services/api";
 import { toast } from "react-hot-toast";
 import { RegisteredCourses } from "./RegisteredCourses";
@@ -32,6 +34,11 @@ export function CourseSearch({ period, onBack }: CourseSearchProps) {
   const [expandedSubject, setExpandedSubject] = useState<string | null>(null);
   const [classDetails, setClassDetails] = useState<ClassInfo[]>([]);
   const [loadingClasses, setLoadingClasses] = useState(false);
+  const [registeringClass, setRegisteringClass] = useState<string | null>(null);
+
+  const registeredCoursesRef = useRef<{
+    fetchRegisteredCourses: () => Promise<void>;
+  }>(null);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -85,6 +92,31 @@ export function CourseSearch({ period, onBack }: CourseSearchProps) {
     }
   };
 
+  const handleRegisterClass = async (
+    classInfo: ClassInfo,
+    subject: Subject
+  ) => {
+    try {
+      setRegisteringClass(classInfo.className);
+      const semesterId = period.description.replace("Học kỳ: ", "");
+      await registerClass(
+        classInfo.className,
+        period.id,
+        semesterId,
+        subject.code
+      );
+      toast.success(`Đăng ký thành công lớp ${classInfo.className}`);
+
+      await registeredCoursesRef.current?.fetchRegisteredCourses();
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Có lỗi xảy ra khi đăng ký lớp học"
+      );
+    } finally {
+      setRegisteringClass(null);
+    }
+  };
+
   return (
     <div className="p-6">
       <div className="bg-white shadow-sm rounded-lg p-4 mb-8">
@@ -131,6 +163,7 @@ export function CourseSearch({ period, onBack }: CourseSearchProps) {
           Môn học đã đăng ký
         </h3>
         <RegisteredCourses
+          ref={registeredCoursesRef}
           periodId={period.id}
           semesterId={period.description.replace("Học kỳ: ", "")}
         />
@@ -208,16 +241,29 @@ export function CourseSearch({ period, onBack }: CourseSearchProps) {
                       {classDetails.map((classInfo) => (
                         <button
                           key={classInfo.className}
-                          className="px-4 py-2 text-sm bg-white border rounded-lg hover:bg-gray-50 
+                          disabled={registeringClass === classInfo.className}
+                          className={`px-4 py-2 text-sm bg-white border rounded-lg
                             focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500
-                            transition-colors shadow-sm hover:shadow"
-                          onClick={() => {
-                            console.log("Register for class:", classInfo);
-                          }}
+                            transition-colors shadow-sm hover:shadow
+                            ${
+                              registeringClass === classInfo.className
+                                ? "opacity-50 cursor-not-allowed"
+                                : "hover:bg-gray-50"
+                            }`}
+                          onClick={() =>
+                            handleRegisterClass(classInfo, subject)
+                          }
                         >
-                          <span className="font-medium text-gray-900">
-                            Lớp {classInfo.className}
-                          </span>
+                          {registeringClass === classInfo.className ? (
+                            <div className="flex items-center">
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-indigo-600 mr-2" />
+                              <span>Đang đăng ký...</span>
+                            </div>
+                          ) : (
+                            <span className="font-medium text-gray-900">
+                              Lớp {classInfo.className}
+                            </span>
+                          )}
                         </button>
                       ))}
                     </div>

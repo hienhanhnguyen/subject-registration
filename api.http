@@ -1,5 +1,5 @@
 ### CHỨC NĂNG ĐĂNG NHẬP
-### signin Request
+### signin Request 
 POST https://dkmh.onrender.com/api/v1/auth/login
 Content-Type: application/json
 
@@ -7,12 +7,14 @@ Content-Type: application/json
     "email": "do.quy@hcmut.edu.vn",
     "password": "12345678"
 }
-### CHỨC NĂNG STUDENT PROFILE
+###
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6MjIxMjk3MSwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3MzM3MTI4NTIsImV4cCI6MTczMzcxNjQ1Mn0.5sXU-ywz2cnYTCQJNFJ3IvjpcTLdZlJrIijKHcYjWCE
+### CHỨC NĂNG STUDENT PROFILE 
 ### show user profile
 GET https://dkmh.onrender.com/api/v1/user-profile
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6MjIxMjk3MSwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3MzM3MTI4NTIsImV4cCI6MTczMzcxNjQ1Mn0.5sXU-ywz2cnYTCQJNFJ3IvjpcTLdZlJrIijKHcYjWCE
 
-### update for student role only
+### update for student role only (undone)
 PUT https://dkmh.onrender.com/api/v1/user-profile
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6MjIxMjM1Miwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3MzMyOTM0MTIsImV4cCI6MTczMzI5NzAxMn0.bN-K55BD48AQuDhKa6oB9KJ6uJVguquiriKSPpQ7Ask
@@ -25,7 +27,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6MjIxM
     "ngay_sinh": "2004-06-11"
 }
 
-### CHỨC NĂNG ĐĂNG KÝ MÔN HỌC
+### CHỨC NĂNG ĐĂNG KÝ MÔN HỌC 
 ### lay tat ca dot dang ky
 GET https://dkmh.onrender.com/api/v1/subject-registration
 Content-Type: application/json
@@ -50,3 +52,62 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6MjIxM
 GET https://dkmh.onrender.com/api/v1/subject-registration/class_details?ma_dot_dk=DK_HK233_D3&ma_hk=HK233&ma_mon=PH1003
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6MjIxMjM1Miwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3MzMyOTM0MTIsImV4cCI6MTczMzI5NzAxMn0.bN-K55BD48AQuDhKa6oB9KJ6uJVguquiriKSPpQ7Ask
+
+
+### dang ky mon/lop hoc
+POST https://dkmh.onrender.com/api/v1/subject-registration/register_class?ma_lop_hoc=CC01&ma_dot_dk=DK_HK242_D2&ma_hk=HK242&ma_mon=MT1007
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+### Huy dang ky mon/lop hoc 
+
+POST https://dkmh.onrender.com/api/v1/subject-registration/unregister_class?ma_lop_hoc=CC01&ma_dot_dk=DK_HK242_D2&ma_hk=HK242&ma_mon=MT1007
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+### CHUC NĂNG CHO CHUYEN VIEN PHONG DAO TAO (undone)
+### Find student -- note: đăng nhập acc admin trc -- note: có mssv thì tìm theo mssv, ko thì tìm theo các trường còn lại
+GET https://dkmh.onrender.com/api/v1/subject-registration/search_student?khoa=2
+Authorization: Bearer {{token}}
+
+### Update student information
+POST https://dkmh.onrender.com/api/v1/subject-registration/update_student
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "ma_nguoi_dung": 2111493,
+    "ma_gvcn": 10009,
+    "ma_he_dao_tao": "CQ",
+    "ma_khoa_sv": "K21",
+    "ma_chuan_av": 5,
+    "ma_chuan_sv": 5,
+    "ma_ctdt": "2_KTCĐ_K21_CQ",
+    "ngay_ctxh": 15,
+    "email": "nguyenminh.khanh@hcmut.edu.vn",
+    "gioi_tinh": "Nam",
+    "dia_chi": "TP.HCM",
+    "sdt": "0314108888",
+    "cccd": "0386895818"
+}
+
+
+
+
+
+### CHUC NĂNG XEM BẢNG ĐIỂM STUDENT
+### Get semester grades
+GET https://dkmh.onrender.com/api/v1/grade/get_semester_grades
+Authorization: Bearer {{token}}
+
+### Get class grades (done but sill not have data yet)
+GET https://dkmh.onrender.com/api/v1/grade/get_class_grades?ma_hk=HK2021
+Authorization: Bearer {{token}}
+
+### Get GPA and credits
+GET https://dkmh.onrender.com/api/v1/grade/get_gpa_and_credits
+Authorization: Bearer {{token}}
+
+### Get transcript
+GET https://dkmh.onrender.com/api/v1/grade/get_transcript
+Authorization: Bearer {{token}}
