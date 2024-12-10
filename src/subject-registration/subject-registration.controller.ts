@@ -243,25 +243,26 @@ export class SubjectRegistrationController {
     }
   }
 
-  @UseGuards(JwtGuard)
+  // @UseGuards(JwtGuard)
   @Post('update_student')
   async updateStudent(
-    @Body('ma_nguoi_dung') ma_nguoi_dung: number,
-    @Body('ten_khoa') ten_khoa: number,
-    @Body('email') email: string,
+    @Body('ma_nguoi_dung') ma_nguoi_dung: number = null,
+    @Body('ten_khoa') ten_khoa: number = null,
+    @Body('email') email: string = null,
     @Body('gioi_tinh') gioi_tinh: 'Nam' | 'Nữ',
-    @Body('dia_chi') dia_chi: string,
-    @Body('sdt') sdt: string,
-    @Body('cccd') cccd: string,
-    @Body('ngay_sinh') ngay_sinh: string,
-    @Body('ma_gvcn') ma_gvcn: number,
-    @Body('ma_he_dao_tao') ma_he_dao_tao: string,
-    @Body('ma_khoa_sv') ma_khoa_sv: string,
-    @Body('ma_chuan_av') ma_chuan_av: number,
-    @Body('ma_chuan_sv') ma_chuan_sv: number,
-    @Body('ma_ctdt') ma_ctdt: string
+    @Body('dia_chi') dia_chi: string = null,
+    @Body('sdt') sdt: string = null,
+    @Body('cccd') cccd: string = null,
+    @Body('ngay_sinh') ngay_sinh: string = null,
+    @Body('ma_gvcn') ma_gvcn: number = null,
+    @Body('ma_he_dao_tao') ma_he_dao_tao: string = null,
+    @Body('ma_khoa_sv') ma_khoa_sv: string = null,
+    @Body('ma_chuan_av') ma_chuan_av: number = null,
+    @Body('ma_chuan_sv') ma_chuan_sv: number = null,
+    @Body('ma_ctdt') ma_ctdt: string = null,
   ) {
     try {
+      console.log('reach inside of update student admin')
       const result = await this.subjectRegistrationService.updateStudent(
         ma_nguoi_dung,
         ten_khoa,

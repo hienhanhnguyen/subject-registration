@@ -20,7 +20,7 @@ import { error } from 'console';
 @UseGuards(JwtGuard, RolesGuard)
 @Role('student')
 export class UserProfileController {
-  constructor(private readonly userProfileService: UserProfileService) {}
+  constructor(private readonly userProfileService: UserProfileService) { }
 
   @Get()
   async getStudentProfile(@Request() req) {
@@ -58,7 +58,8 @@ export class UserProfileController {
         throw new HttpException('Update failed', HttpStatus.BAD_REQUEST);
       }
       return {
-        stattus: 'success',
+        error: false,
+        status: 'success',
         info: resultUpdate,
       };
     } catch (error) {

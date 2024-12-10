@@ -352,6 +352,7 @@ export class SubjectRegistrationService {
     p_ma_ctdt: string
   ) {
     try {
+      console.log("update student admin", p_ma_nguoi_dung, p_ten_khoa, p_email, p_gioi_tinh, p_dia_chi, p_sdt, p_cccd, p_ngay_sinh, p_ma_gvcn, p_ma_he_dao_tao, p_ma_khoa_sv, p_ma_chuan_av, p_ma_chuan_sv, p_ma_ctdt);
       await this.prisma.$executeRaw`
         CALL CAPNHAT_SINHVIEN(
           ${p_ma_nguoi_dung}, 

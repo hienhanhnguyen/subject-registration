@@ -85,19 +85,8 @@ Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
-    "ma_nguoi_dung": 2111493,
-    "ma_gvcn": 10009,
-    "ma_he_dao_tao": "CQ",
-    "ma_khoa_sv": "K21",
-    "ma_chuan_av": 5,
-    "ma_chuan_sv": 5,
-    "ma_ctdt": "2_KTCĐ_K21_CQ",
-    "ngay_ctxh": 15,
-    "email": "nguyenminh.khanh@hcmut.edu.vn",
-    "gioi_tinh": "Nam",
-    "dia_chi": "TP.HCM",
-    "sdt": "0314108888",
-    "cccd": "0386895818"
+    "ma_nguoi_dung": "2111493",
+    "sdt": "0976481171"
 }
 
 
