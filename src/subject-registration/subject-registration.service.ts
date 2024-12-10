@@ -376,7 +376,72 @@ export class SubjectRegistrationService {
       throw new Error("Error updating student information");
     }
   }
-
+  async createStudent(
+    p_ho: string,
+    p_ten: string,
+    p_email: string,
+    p_password: string,
+    p_gioi_tinh: 'Nam' | 'Nữ',
+    p_dia_chi: string,
+    p_sdt: string,
+    p_cccd: string,
+    p_ngay_sinh: string,
+    p_ma_gvcn: number,
+    p_ma_he_dao_tao: string,
+    p_ma_khoa_sv: string,
+    p_ma_chuan_av: number,
+    p_ma_chuan_sv: number,
+    p_ma_ctdt: string,
+    p_ngay_ctxh: number,
+    p_gpa_tichluy: number,
+    p_tinchi_tichluy: number,
+    p_ngay_nhap_hoc: string,
+    p_han_dao_tao_sv: string,
+    p_thoi_gian_bao_luu: string
+  ) {
+    try {
+      await this.prisma.$executeRaw`
+        CALL TAO_SVIEN1(
+          ${p_ho}, 
+          ${p_ten}, 
+          ${p_email}, 
+          ${p_password}, 
+          ${p_gioi_tinh}, 
+          ${p_dia_chi}, 
+          ${p_sdt}, 
+          ${p_cccd}, 
+          ${p_ngay_sinh}, 
+          ${p_ma_gvcn}, 
+          ${p_ma_he_dao_tao}, 
+          ${p_ma_khoa_sv}, 
+          ${p_ma_chuan_av}, 
+          ${p_ma_chuan_sv}, 
+          ${p_ma_ctdt}, 
+          ${p_ngay_ctxh}, 
+          ${p_gpa_tichluy}, 
+          ${p_tinchi_tichluy}, 
+          ${p_ngay_nhap_hoc}, 
+          ${p_han_dao_tao_sv}, 
+          ${p_thoi_gian_bao_luu}
+        );
+      `;
+      return { message: "Student created successfully" };
+    } catch (error) {
+      console.error(error);
+      throw new Error("Error creating student");
+    }
+  }
+  async deleteStudent(p_ma_nguoi_dung: number) {
+    try {
+      await this.prisma.$executeRaw`
+        CALL XOA_SVIEN(${p_ma_nguoi_dung});
+      `;
+      return { message: "Student deleted successfully" };
+    } catch (error) {
+      console.error(error);
+      throw new Error("Error deleting student");
+    }
+  }
 }
 // async function testFunction() {
 //   const service = new SubjectRegistrationService(PrismaService);

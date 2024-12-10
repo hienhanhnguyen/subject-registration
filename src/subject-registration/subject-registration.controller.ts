@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, Query, Body } from "@nestjs/common";
+import { Controller, Get, Param, Post, Query, Body, Delete } from "@nestjs/common";
 import { SubjectRegistrationService } from "./subject-registration.service";
 import { JwtGuard } from "src/auth/jwt.guard";
 import { UseGuards, Request } from "@nestjs/common";
@@ -291,5 +291,77 @@ export class SubjectRegistrationController {
       };
     }
   }
+  @UseGuards(JwtGuard)
+  @Post('create_student')
+  async createStudent(@Body('ho') ho: string, @Body('ten') ten: string,
+    @Body('email') email: string, @Body('password') password: string,
+    @Body('gioi_tinh') gioi_tinh: 'Nam' | 'Nữ', @Body('dia_chi') dia_chi: string,
+    @Body('sdt') sdt: string, @Body('cccd') cccd: string, @Body('ngay_sinh') ngay_sinh: string,
+    @Body('ma_gvcn') ma_gvcn: number, @Body('ma_he_dao_tao') ma_he_dao_tao: string,
+    @Body('ma_khoa_sv') ma_khoa_sv: string, @Body('ma_chuan_av') ma_chuan_av: number,
+    @Body('ma_chuan_sv') ma_chuan_sv: number, @Body('ma_ctdt') ma_ctdt: string,
+    @Body('ngay_ctxh') ngay_ctxh: number,
+    @Body('gpa_tichluy') gpa_tichluy: number,
+    @Body('tinchi_tichluy') tinchi_tichluy: number,
+    @Body('ngay_nhap_hoc') ngay_nhap_hoc: string,
+    @Body('han_dao_tao_sv') han_dao_tao_sv: string,
+    @Body('thoi_gian_bao_luu') thoi_gian_bao_luu: string
+  ) {
+    try {
+      const result = await this.subjectRegistrationService.createStudent(
+        ho,
+        ten,
+        email,
+        password,
+        gioi_tinh,
+        dia_chi,
+        sdt,
+        cccd,
+        ngay_sinh,
+        ma_gvcn,
+        ma_he_dao_tao,
+        ma_khoa_sv,
+        ma_chuan_av,
+        ma_chuan_sv,
+        ma_ctdt,
+        ngay_ctxh,
+        gpa_tichluy,
+        tinchi_tichluy,
+        ngay_nhap_hoc,
+        han_dao_tao_sv,
+        thoi_gian_bao_luu
+      );
+      return {
+        error: false,
+        message: 'success',
+        // data: result,
+      };
+    } catch (error) {
+      return {
+        error: true,
+        message: error.message,
+        data: null,
+      };
+    }
+  }
+  @UseGuards(JwtGuard)
+  @Delete('delete_student')
+  async deleteStudent(@Query('ma_nguoi_dung') ma_nguoi_dung: number) {
+    try {
+      const result = await this.subjectRegistrationService.deleteStudent(ma_nguoi_dung);
+      return {
+        error: false,
+        message: 'success',
+        data: result,
+      };
+    } catch (error) {
+      return {
+        error: true,
+        message: error.message,
+        data: null,
+      };
+    }
+  }
+
 
 }

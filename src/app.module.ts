@@ -10,6 +10,7 @@ import { ConfigModule } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { UserProfileModule } from './user-profile/user-profile.module';
 import { SubjectRegistrationModule } from './subject-registration/subject-registration.module';
+import { SubjectGradeModule } from './subject-grade/subject-grade.module';
 
 @Module({
   imports: [
@@ -20,8 +21,9 @@ import { SubjectRegistrationModule } from './subject-registration/subject-regist
     AuthModule,
     UserProfileModule,
     SubjectRegistrationModule,
+    SubjectGradeModule,
   ],
   controllers: [AppController, AuthController],
   providers: [AppService, AuthService, JwtService],
 })
-export class AppModule {}
+export class AppModule { }

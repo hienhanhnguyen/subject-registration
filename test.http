@@ -16,8 +16,10 @@ Content-Type: application/json
     "email": "do.quy@hcmut.edu.vn",
     "password": "12345678"
 }
+
+
 ###
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6MjMyMDAxMCwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3MzM3ODU1ODcsImV4cCI6MTczMzc4OTE4N30.fOD4bx-AjUo2OaixyspNvdXCH-i6XduAXjy06tnPVeI
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6MjMyMDAxMCwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3MzM4MDA5NzksImV4cCI6MTczMzgwNDU3OX0.dbrlWl4-njcB3BafHSSdZJL83xspujIZLCn3427nlkA
 
 ###
 GET https://dkmh.onrender.com/api/v1/user-profile
@@ -100,3 +102,18 @@ Authorization: Bearer {{token}}
 
 
 ### CHUC NĂNG XEM BẢNG ĐIỂM STUDENT
+### Get semester grades
+GET http://localhost:3000/api/v1/grade/get_semester_grades
+Authorization: Bearer {{token}}
+
+### Get class grades
+GET http://localhost:3000/api/v1/grade/get_class_grades?ma_hk=HK2021
+Authorization: Bearer {{token}}
+
+### Get GPA and credits
+GET http://localhost:3000/api/v1/grade/get_gpa_and_credits
+Authorization: Bearer {{token}}
+
+### Get transcript
+GET http://localhost:3000/api/v1/grade/get_transcript
+Authorization: Bearer {{token}}
