@@ -1,7 +1,9 @@
-import { Controller, Get, Param, Post, Query } from "@nestjs/common";
+import { Controller, Get, Param, Post, Query, Body } from "@nestjs/common";
 import { SubjectRegistrationService } from "./subject-registration.service";
 import { JwtGuard } from "src/auth/jwt.guard";
 import { UseGuards, Request } from "@nestjs/common";
+import { Role } from "src/auth/decorators/role.decorator";
+import { RolesGuard } from "src/auth/role.guard";
 @Controller("subject-registration")
 export class SubjectRegistrationController {
   constructor(
@@ -144,31 +146,150 @@ export class SubjectRegistrationController {
       };
     }
   }
+  @UseGuards(JwtGuard)
+  @Post("register_class")
+  async registerClass(
+    @Query("ma_lop_hoc") ten_lop: string,
+    @Query("ma_dot_dk") ma_dot_dk: string,
+    @Query("ma_hk") ma_hk: string,
+    @Query("ma_mon") ma_mon: string,
 
-  // @Post("register_class")
-  // async registerClass(
-  //   @Query("ma_lop_hoc") ma_lop_hoc: string,
-  //   @Query("ma_dot_dk") ma_dot_dk: string,
-  //   @Request() req,
-  // ) {
-  //   try {
-  //     const mssv = req.user.mssv;
-  //     const result = await this.subjectRegistrationService.registerClass(
-  //       ma_lop_hoc,
-  //       ma_dot_dk,
-  //       mssv,
-  //     );
-  //     return {
-  //       error: false,
-  //       message: "success",
-  //       data: result,
-  //     };
-  //   } catch (error) {
-  //     return {
-  //       error: true,
-  //       message: error.message,
-  //       data: null,
-  //     };
-  //   }
-  // }
+    @Request() req,
+  ) {
+    try {
+      const mssv = req.user.ma_nguoi_dung;
+      const result = await this.subjectRegistrationService.registerStudentForClass(
+        mssv,
+        ma_dot_dk,
+        ten_lop,
+        ma_mon,
+        ma_hk
+      );
+      return {
+        error: false,
+        message: "success",
+        // data: result,
+      };
+    } catch (error) {
+      return {
+        error: true,
+        message: error.message,
+        data: null,
+      };
+    }
+  }
+
+  @UseGuards(JwtGuard)
+  @Post("unregister_class")
+  async unregisterClass(
+    @Query("ma_lop_hoc") ten_lop: string,
+    @Query("ma_dot_dk") ma_dot_dk: string,
+    @Query("ma_hk") ma_hk: string,
+    @Query("ma_mon") ma_mon: string,
+    @Request() req,
+  ) {
+    try {
+      const mssv = req.user.ma_nguoi_dung;
+      const result = await this.subjectRegistrationService.unregisterStudentFromClass(
+        mssv,
+        ma_dot_dk,
+        ten_lop,
+        ma_mon,
+        ma_hk
+      );
+      return {
+        error: false,
+        message: "success",
+        // data: result,
+      };
+    } catch (error) {
+      return {
+        error: true,
+        message: error.message,
+        data: null,
+      };
+    }
+  }
+  @UseGuards(JwtGuard, RolesGuard)
+  @Role("admin")
+  @Get('search_student')
+  async findStudent(
+    @Query('mssv') p_mssv: number,
+    @Query('khoa') p_khoa: string,
+    @Query('khoa_sv') p_khoa_sv: string,
+    @Query('he_dao_tao') p_he_dao_tao: string,
+    @Query('gvcn') p_gvcn: number,
+    @Query('chuan_av') p_chuan_av: string,
+    @Query('chuan_sv') p_chuan_sv: string,
+  ) {
+    try {
+      let results;
+      if (p_mssv) {
+        results = await this.subjectRegistrationService.findStudentByMssv(p_mssv);
+      } else {
+        results = await this.subjectRegistrationService.findStudent(p_khoa, p_khoa_sv, p_he_dao_tao, p_gvcn, p_chuan_av, p_chuan_sv);
+      }
+      return {
+        error: false,
+        message: 'success',
+        data: results,
+      };
+    } catch (error) {
+      return {
+        error: true,
+        message: error.message,
+        data: null,
+      };
+    }
+  }
+
+  @UseGuards(JwtGuard)
+  @Post('update_student')
+  async updateStudent(
+    @Body('ma_nguoi_dung') ma_nguoi_dung: number,
+    @Body('ten_khoa') ten_khoa: number,
+    @Body('email') email: string,
+    @Body('gioi_tinh') gioi_tinh: 'Nam' | 'Nữ',
+    @Body('dia_chi') dia_chi: string,
+    @Body('sdt') sdt: string,
+    @Body('cccd') cccd: string,
+    @Body('ngay_sinh') ngay_sinh: string,
+    @Body('ma_gvcn') ma_gvcn: number,
+    @Body('ma_he_dao_tao') ma_he_dao_tao: string,
+    @Body('ma_khoa_sv') ma_khoa_sv: string,
+    @Body('ma_chuan_av') ma_chuan_av: number,
+    @Body('ma_chuan_sv') ma_chuan_sv: number,
+    @Body('ma_ctdt') ma_ctdt: string
+  ) {
+    try {
+      const result = await this.subjectRegistrationService.updateStudent(
+        ma_nguoi_dung,
+        ten_khoa,
+        email,
+        gioi_tinh,
+        dia_chi,
+        sdt,
+        cccd,
+        ngay_sinh,
+        ma_gvcn,
+        ma_he_dao_tao,
+        ma_khoa_sv,
+        ma_chuan_av,
+        ma_chuan_sv,
+        ma_ctdt
+      );
+      return {
+        error: false,
+        message: 'success',
+        data: result,
+      };
+    } catch (error) {
+      return {
+        error: true,
+        message: error.message,
+        data: null,
+      };
+    }
+  }
+
 }

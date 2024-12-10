@@ -242,7 +242,7 @@ export class SubjectRegistrationService {
 
   async registerStudentForClass(ma_sv: number, ma_dot_dk: string, ten_lop: string, ma_mon: string, ma_hk: string) {
     try {
-      await this.prisma.$executeRaw`CALL SVChonLopHoc(${ma_sv}, ${ma_dot_dk}, ${ten_lop}, ${ma_mon}, ${ma_hk});`;
+      await this.prisma.$executeRaw`CALL SVChonLopHoc1(${ma_sv}, ${ma_dot_dk}, ${ten_lop}, ${ma_mon}, ${ma_hk});`;
       return { message: "Student registered for class successfully" };
     } catch (error) {
       console.error(error);
@@ -251,13 +251,132 @@ export class SubjectRegistrationService {
   }
   async unregisterStudentFromClass(ma_sv: number, ma_dot_dk: string, ten_lop: string, ma_mon: string, ma_hk: string) {
     try {
-      await this.prisma.$executeRaw`CALL SVXoaLopHoc(${ma_sv}, ${ma_dot_dk}, ${ten_lop}, ${ma_mon}, ${ma_hk});`;
+      await this.prisma.$executeRaw`CALL SVXoaLopHoc1(${ma_sv}, ${ma_dot_dk}, ${ten_lop}, ${ma_mon}, ${ma_hk});`;
       return { message: "Student unregistered from class successfully" };
     } catch (error) {
       console.error(error);
       throw new Error("Error unregistering student from class");
     }
   }
+  async findStudent(p_khoa: string, p_khoa_sv: string, p_he_dao_tao: string, p_gvcn: number, p_chuan_av: string, p_chuan_sv: string) {
+    try {
+      const rawResults = await this.prisma.$queryRaw<any[]>`CALL FILTER_SINHVIEN(${p_khoa}, ${p_khoa_sv}, ${p_he_dao_tao}, ${p_gvcn}, ${p_chuan_av}, ${p_chuan_sv});`;
+
+      // Map the raw result to meaningful field names
+      const mappedResults = rawResults.map(row => ({
+        ma_nguoi_dung: row.f0,
+        ma_gvcn: row.f1,
+        ma_he_dao_tao: row.f2,
+        ma_khoa_sv: row.f3,
+        ma_chuan_av: row.f4,
+        ma_chuan_sv: row.f5,
+        ma_ctdt: row.f6,
+        ngay_ctxh: row.f7,
+        gpa_tichluy: parseFloat(row.f8),
+        tinchi_tichluy: row.f9,
+        ngay_nhap_hoc: row.f10 ? row.f10 : null,
+        han_dao_tao_sv: row.f11 ? row.f11 : null,
+        thoi_gian_bao_luu: row.f12,
+        ma_khoa: row.f14,
+        ho: row.f15,
+        ten: row.f16,
+        email: row.f17,
+        password: row.f18,
+        gioi_tinh: row.f19,
+        dia_chi: row.f20,
+        sdt: row.f21,
+        cccd: row.f22,
+        ngay_sinh: row.f23 ? row.f23 : null,
+      }));
+
+      return mappedResults;
+    } catch (error) {
+      console.error(error);
+      throw new Error("Error finding student");
+    }
+  }
+  async findStudentByMssv(mssv: number) {
+    try {
+      const rawResult = await this.prisma.$queryRaw<any[]>`CALL FIND_SV_BY_MSSV(${mssv});`;
+
+      if (rawResult.length === 0) {
+        throw new Error("Student not found");
+      }
+
+      const student = rawResult[0];
+      return {
+        ma_nguoi_dung: student.f0,
+        ma_gvcn: student.f1,
+        ma_he_dao_tao: student.f2,
+        ma_khoa_sv: student.f3,
+        ma_chuan_av: student.f4,
+        ma_chuan_sv: student.f5,
+        ma_ctdt: student.f6,
+        ngay_ctxh: student.f7,
+        gpa_tichluy: parseFloat(student.f8),
+        tinchi_tichluy: student.f9,
+        ngay_nhap_hoc: student.f10 ? student.f10 : null,
+        han_dao_tao_sv: student.f11 ? student.f11 : null,
+        thoi_gian_bao_luu: student.f12,
+        ma_khoa: student.f14,
+        ho: student.f15,
+        ten: student.f16,
+        email: student.f17,
+        password: student.f18 ? null : null,
+        gioi_tinh: student.f19,
+        dia_chi: student.f20,
+        sdt: student.f21,
+        cccd: student.f22,
+        ngay_sinh: student.f23 ? student.f23 : null,
+      };
+    } catch (error) {
+      console.error(error);
+      throw new Error("Error finding student by MSSV");
+    }
+  }
+
+  async updateStudent(
+    p_ma_nguoi_dung: number,
+    p_ten_khoa: number,
+    p_email: string,
+    p_gioi_tinh: 'Nam' | 'Nữ',
+    p_dia_chi: string,
+    p_sdt: string,
+    p_cccd: string,
+    p_ngay_sinh: string,
+    p_ma_gvcn: number,
+    p_ma_he_dao_tao: string,
+    p_ma_khoa_sv: string,
+    p_ma_chuan_av: number,
+    p_ma_chuan_sv: number,
+    p_ma_ctdt: string
+  ) {
+    try {
+      await this.prisma.$executeRaw`
+        CALL CAPNHAT_SINHVIEN(
+          ${p_ma_nguoi_dung}, 
+          ${p_ten_khoa}, 
+          ${p_email}, 
+          ${p_gioi_tinh}, 
+          ${p_dia_chi}, 
+          ${p_sdt}, 
+          ${p_cccd}, 
+          ${p_ngay_sinh}, 
+          ${p_ma_gvcn}, 
+          ${p_ma_he_dao_tao}, 
+          ${p_ma_khoa_sv}, 
+          ${p_ma_chuan_av}, 
+          ${p_ma_chuan_sv}, 
+          ${p_ma_ctdt}
+        );
+      `;
+      return { message: "Student information updated successfully" };
+    } catch (error) {
+      console.error(error);
+      throw new Error("Error updating student information");
+    }
+  }
+
 }
 // async function testFunction() {
 //   const service = new SubjectRegistrationService(PrismaService);
