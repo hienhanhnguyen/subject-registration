@@ -999,3 +999,176 @@ export async function getTranscript(): Promise<TranscriptGrade[]> {
       : new Error('Không thể kết nối đến máy chủ');
   }
 } 
+
+interface ApiStudent {
+  ma_nguoi_dung: number;
+  ma_he_dao_tao: string;
+  ma_khoa_sv: string;
+  gpa_tichluy: number;
+  tinchi_tichluy: number;
+  ngay_nhap_hoc: string;
+  han_dao_tao_sv: string;
+  ma_khoa: number;
+  ho: string;
+  ten: string;
+  email: string;
+  gioi_tinh: string;
+  dia_chi: string;
+  sdt: string;
+  cccd: string;
+  ngay_sinh: string;
+}
+
+interface ApiSearchStudentResponse {
+  error: boolean;
+  message: string;
+  data: ApiStudent[];
+}
+
+export interface StudentSearchResult {
+  id: number;
+  name: string;
+  studentId: string;
+  faculty: string;
+  program: string;
+  class: string;
+  email: string;
+  gender: string;
+  address: string;
+  phone: string;
+  idNumber: string;
+  birthDate: Date;
+  gpa: number;
+  credits: number;
+  startDate: Date;
+  endDate: Date;
+}
+
+export async function searchStudents(params: {
+  studentId?: string;
+  faculty?: string;
+}): Promise<StudentSearchResult[]> {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('Vui lòng đăng nhập lại');
+    }
+
+    let url = `${API_BASE_URL}/subject-registration/search_student`;
+    if (params.studentId) {
+      url += `?ma_nguoi_dung=${params.studentId}`;
+    } else if (params.faculty) {
+      url += `?khoa=${params.faculty}`;
+    }
+
+    const response = await fetch(url, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Không thể tìm kiếm sinh viên');
+    }
+
+    const data = await response.json() as ApiSearchStudentResponse;
+
+    if (data.error) {
+      throw new Error(data.message || 'Có lỗi xảy ra khi tìm kiếm sinh viên');
+    }
+
+    return data.data.map(student => ({
+      id: student.ma_nguoi_dung,
+      name: `${student.ho} ${student.ten}`,
+      studentId: student.ma_nguoi_dung.toString(),
+      faculty: `Khoa ${student.ma_khoa}`,
+      program: student.ma_he_dao_tao,
+      class: student.ma_khoa_sv,
+      email: student.email,
+      gender: student.gioi_tinh,
+      address: student.dia_chi,
+      phone: student.sdt,
+      idNumber: student.cccd,
+      birthDate: new Date(student.ngay_sinh),
+      gpa: student.gpa_tichluy,
+      credits: student.tinchi_tichluy,
+      startDate: new Date(student.ngay_nhap_hoc),
+      endDate: new Date(student.han_dao_tao_sv),
+    }));
+  } catch (error) {
+    console.error('Student search error:', error);
+    throw error instanceof Error 
+      ? error 
+      : new Error('Không thể kết nối đến máy chủ');
+  }
+} 
+
+export interface UpdateStudentDTO {
+  ma_nguoi_dung: number;
+  ma_gvcn: number;
+  ma_he_dao_tao: string;
+  ma_khoa_sv: string;
+  ma_chuan_av: number;
+  ma_chuan_sv: number;
+  ma_ctdt: string;
+  ngay_ctxh: number;
+  email: string;
+  gioi_tinh: string;
+  dia_chi: string;
+  sdt: string;
+  cccd: string;
+}
+
+interface UpdateStudentResponse {
+  error: boolean;
+  message: string;
+}
+
+export async function updateStudent(data: UpdateStudentDTO): Promise<UpdateStudentResponse> {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('Vui lòng đăng nhập lại');
+    }
+
+    console.log('Updating student:', data);
+
+    const response = await fetch(
+      `${API_BASE_URL}/subject-registration/update_student`,
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      }
+    );
+
+    const responseText = await response.text();
+    console.log('Update student response:', responseText);
+
+    let result;
+    try {
+      result = JSON.parse(responseText);
+    } catch (e) {
+      throw new Error('Phản hồi không hợp lệ từ máy chủ');
+    }
+
+    if (!response.ok || result.error) {
+      // Map specific error messages
+      if (result.message === "Error updating student information") {
+        throw new Error("Không thể cập nhật thông tin sinh viên. Vui lòng thử lại sau.");
+      }
+      throw new Error(result.message || 'Có lỗi xảy ra khi cập nhật thông tin sinh viên');
+    }
+
+    return result;
+  } catch (error) {
+    console.error('Update student error:', error);
+    throw error instanceof Error 
+      ? error 
+      : new Error('Không thể kết nối đến máy chủ');
+  }
+} 

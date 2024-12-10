@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useMemo } from "react";
 import {
   Search,
   ArrowLeft,
@@ -39,6 +39,16 @@ export function CourseSearch({ period, onBack }: CourseSearchProps) {
   const registeredCoursesRef = useRef<{
     fetchRegisteredCourses: () => Promise<void>;
   }>(null);
+
+  const periodStatus = useMemo(() => {
+    const now = new Date().getTime();
+    const start = new Date(period.startDate).getTime();
+    const end = new Date(period.endDate).getTime();
+
+    if (now < start) return "upcoming";
+    if (now > end) return "closed";
+    return "active";
+  }, [period]);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -103,10 +113,10 @@ export function CourseSearch({ period, onBack }: CourseSearchProps) {
         classInfo.className,
         period.id,
         semesterId,
-        subject.code
+        subject.code,
+        periodStatus
       );
       toast.success(`Đăng ký thành công lớp ${classInfo.className}`);
-
       await registeredCoursesRef.current?.fetchRegisteredCourses();
     } catch (err) {
       toast.error(
@@ -241,12 +251,16 @@ export function CourseSearch({ period, onBack }: CourseSearchProps) {
                       {classDetails.map((classInfo) => (
                         <button
                           key={classInfo.className}
-                          disabled={registeringClass === classInfo.className}
+                          disabled={
+                            registeringClass === classInfo.className ||
+                            periodStatus !== "active"
+                          }
                           className={`px-4 py-2 text-sm bg-white border rounded-lg
                             focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500
                             transition-colors shadow-sm hover:shadow
                             ${
-                              registeringClass === classInfo.className
+                              registeringClass === classInfo.className ||
+                              periodStatus !== "active"
                                 ? "opacity-50 cursor-not-allowed"
                                 : "hover:bg-gray-50"
                             }`}
@@ -259,6 +273,12 @@ export function CourseSearch({ period, onBack }: CourseSearchProps) {
                               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-indigo-600 mr-2" />
                               <span>Đang đăng ký...</span>
                             </div>
+                          ) : periodStatus !== "active" ? (
+                            <span className="text-gray-500">
+                              {periodStatus === "upcoming"
+                                ? "Chưa mở đăng ký"
+                                : "Đã hết hạn"}
+                            </span>
                           ) : (
                             <span className="font-medium text-gray-900">
                               Lớp {classInfo.className}
