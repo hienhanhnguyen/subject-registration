@@ -242,7 +242,7 @@ export class SubjectRegistrationService {
 
   async registerStudentForClass(ma_sv: number, ma_dot_dk: string, ten_lop: string, ma_mon: string, ma_hk: string) {
     try {
-      await this.prisma.$executeRaw`CALL SVChonLopHoc1(${ma_sv}, ${ma_dot_dk}, ${ten_lop}, ${ma_mon}, ${ma_hk});`;
+      await this.prisma.$queryRaw`CALL SVChonLopHoc1(${ma_sv}, ${ma_dot_dk}, ${ten_lop}, ${ma_mon}, ${ma_hk});`;
       return { message: "Student registered for class successfully" };
     } catch (error) {
       console.error(error);
@@ -251,7 +251,7 @@ export class SubjectRegistrationService {
   }
   async unregisterStudentFromClass(ma_sv: number, ma_dot_dk: string, ten_lop: string, ma_mon: string, ma_hk: string) {
     try {
-      await this.prisma.$executeRaw`CALL SVXoaLopHoc1(${ma_sv}, ${ma_dot_dk}, ${ten_lop}, ${ma_mon}, ${ma_hk});`;
+      await this.prisma.$queryRaw`CALL SVXoaLopHoc1(${ma_sv}, ${ma_dot_dk}, ${ten_lop}, ${ma_mon}, ${ma_hk});`;
       return { message: "Student unregistered from class successfully" };
     } catch (error) {
       console.error(error);
@@ -345,16 +345,11 @@ export class SubjectRegistrationService {
     p_sdt: string,
     p_cccd: string,
     p_ngay_sinh: string,
-    p_ma_gvcn: number,
-    p_ma_he_dao_tao: string,
-    p_ma_khoa_sv: string,
-    p_ma_chuan_av: number,
-    p_ma_chuan_sv: number,
-    p_ma_ctdt: string
+
   ) {
     try {
-      console.log("update student admin", p_ma_nguoi_dung, p_ten_khoa, p_email, p_gioi_tinh, p_dia_chi, p_sdt, p_cccd, p_ngay_sinh, p_ma_gvcn, p_ma_he_dao_tao, p_ma_khoa_sv, p_ma_chuan_av, p_ma_chuan_sv, p_ma_ctdt);
-      await this.prisma.$executeRaw`
+      console.log("update student admin", p_ma_nguoi_dung, p_ten_khoa, p_email, p_gioi_tinh, p_dia_chi, p_sdt, p_cccd, p_ngay_sinh);
+      await this.prisma.$queryRaw`
         CALL CAPNHAT_SINHVIEN(
           ${p_ma_nguoi_dung}, 
           ${p_ten_khoa}, 
@@ -363,13 +358,7 @@ export class SubjectRegistrationService {
           ${p_dia_chi}, 
           ${p_sdt}, 
           ${p_cccd}, 
-          ${p_ngay_sinh}, 
-          ${p_ma_gvcn}, 
-          ${p_ma_he_dao_tao}, 
-          ${p_ma_khoa_sv}, 
-          ${p_ma_chuan_av}, 
-          ${p_ma_chuan_sv}, 
-          ${p_ma_ctdt}
+          ${p_ngay_sinh}
         );
       `;
       return { message: "Student information updated successfully" };
@@ -402,7 +391,7 @@ export class SubjectRegistrationService {
     p_thoi_gian_bao_luu: string
   ) {
     try {
-      await this.prisma.$executeRaw`
+      await this.prisma.$queryRaw`
         CALL TAO_SVIEN1(
           ${p_ho}, 
           ${p_ten}, 
@@ -435,7 +424,7 @@ export class SubjectRegistrationService {
   }
   async deleteStudent(p_ma_nguoi_dung: number) {
     try {
-      await this.prisma.$executeRaw`
+      await this.prisma.$queryRaw`
         CALL XOA_SVIEN(${p_ma_nguoi_dung});
       `;
       return { message: "Student deleted successfully" };

@@ -251,12 +251,6 @@ export class SubjectRegistrationController {
     @Body('sdt') sdt: string = null,
     @Body('cccd') cccd: string = null,
     @Body('ngay_sinh') ngay_sinh: string = null,
-    @Body('ma_gvcn') ma_gvcn: number = null,
-    @Body('ma_he_dao_tao') ma_he_dao_tao: string = null,
-    @Body('ma_khoa_sv') ma_khoa_sv: string = null,
-    @Body('ma_chuan_av') ma_chuan_av: number = null,
-    @Body('ma_chuan_sv') ma_chuan_sv: number = null,
-    @Body('ma_ctdt') ma_ctdt: string = null,
   ) {
     try {
       console.log('reach inside of update student admin')
@@ -269,17 +263,12 @@ export class SubjectRegistrationController {
         sdt,
         cccd,
         ngay_sinh,
-        ma_gvcn,
-        ma_he_dao_tao,
-        ma_khoa_sv,
-        ma_chuan_av,
-        ma_chuan_sv,
-        ma_ctdt
+
       );
       return {
         error: false,
         message: 'success',
-        data: result,
+        // data: result,
       };
     } catch (error) {
       return {
