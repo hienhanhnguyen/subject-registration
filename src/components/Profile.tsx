@@ -93,9 +93,9 @@ export function Profile() {
     }
 
     // Set fixed address if dia_chi is being updated
-    if (data.dia_chi !== undefined) {
-      data.dia_chi = FIXED_ADDRESS.VI;
-    }
+    // if (data.dia_chi !== undefined) {
+    //   data.dia_chi = FIXED_ADDRESS.VI;
+    // }
 
     return null;
   };
@@ -110,7 +110,7 @@ export function Profile() {
       if (editForm.email !== profile?.email)
         updateData.email = editForm.email.trim();
       if (editForm.dia_chi !== profile?.dia_chi)
-        updateData.dia_chi = FIXED_ADDRESS.VI; // Always use fixed Vietnamese address
+        updateData.dia_chi = editForm.dia_chi.trim(); // Always use fixed Vietnamese address
       if (editForm.sdt !== profile?.sdt) updateData.sdt = editForm.sdt.trim();
       if (editForm.cccd !== profile?.cccd)
         updateData.cccd = editForm.cccd.trim();
@@ -271,13 +271,13 @@ export function Profile() {
                 </label>
                 <input
                   type="text"
-                  value={FIXED_ADDRESS.VI}
-                  readOnly
+                  value={editForm.dia_chi}
+                  onChange={(e) =>
+                    setEditForm({ ...editForm, dia_chi: e.target.value })
+                  }
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-50 text-gray-600"
                 />
-                <p className="mt-1 text-sm text-gray-500">
-                  Địa chỉ được cố định theo địa chỉ trường
-                </p>
+                
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">
