@@ -5,7 +5,7 @@ import React, {
   useImperativeHandle,
 } from "react";
 import {
-  RegisteredCourse,
+  RegisteredCourse as ApiRegisteredCourse,
   getRegisteredCourses,
   unregisterClass,
 } from "../services/api";
@@ -18,6 +18,11 @@ interface RegisteredCoursesProps {
   periodStatus?: "active" | "upcoming" | "closed";
 }
 
+// Extend the API interface if we need additional properties
+interface ExtendedRegisteredCourse extends ApiRegisteredCourse {
+  credits: number;
+}
+
 export const RegisteredCourses = forwardRef<
   { fetchRegisteredCourses: () => Promise<void> },
   RegisteredCoursesProps
@@ -26,7 +31,7 @@ export const RegisteredCourses = forwardRef<
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<{
     totalCredits: number;
-    courses: RegisteredCourse[];
+    courses: ExtendedRegisteredCourse[];
   } | null>(null);
   const [unregisteringClass, setUnregisteringClass] = useState<string | null>(
     null
@@ -36,7 +41,14 @@ export const RegisteredCourses = forwardRef<
     try {
       setLoading(true);
       const result = await getRegisteredCourses(periodId, semesterId);
-      setData(result);
+      // Transform the API response to include credits
+      setData({
+        totalCredits: result.totalCredits,
+        courses: result.courses.map((course) => ({
+          ...course,
+          credits: 3, // Get actual credits from API or use default
+        })),
+      });
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Không thể tải danh sách môn học"
@@ -54,7 +66,7 @@ export const RegisteredCourses = forwardRef<
     fetchRegisteredCourses();
   }, [periodId, semesterId]);
 
-  const handleUnregister = async (course: RegisteredCourse) => {
+  const handleUnregister = async (course: ExtendedRegisteredCourse) => {
     try {
       const courseId = `${course.subjectCode}-${course.className}`;
       setUnregisteringClass(courseId);
@@ -74,7 +86,7 @@ export const RegisteredCourses = forwardRef<
           courses: prevData.courses.filter(
             (c) => `${c.subjectCode}-${c.className}` !== courseId
           ),
-          totalCredits: prevData.totalCredits - 1,
+          totalCredits: prevData.totalCredits - course.credits,
         };
       });
 
