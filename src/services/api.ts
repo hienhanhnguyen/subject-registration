@@ -31,15 +31,15 @@ export async function loginUser(email: string, password: string): Promise<LoginR
     });
 
     console.log('Response status:', response.status);
-
+    
     const responseText = await response.text();
     console.log('Raw response:', responseText);
 
     const apiResponse = JSON.parse(responseText) as ApiResponse;
-
+    
     localStorage.setItem('token', apiResponse.access_token);
     console.log('Token stored in localStorage');
-
+    
     const tokenPayload = JSON.parse(atob(apiResponse.access_token.split('.')[1]));
     console.log('Token payload:', tokenPayload);
 
@@ -126,7 +126,7 @@ export async function getUserProfile(): Promise<UserProfile | null> {
     });
 
     console.log('Profile response status:', response.status);
-
+    
     const responseText = await response.text();
     console.log('Raw profile response:', responseText);
 
@@ -135,7 +135,7 @@ export async function getUserProfile(): Promise<UserProfile | null> {
     }
 
     const apiResponse = JSON.parse(responseText) as ApiProfileResponse;
-
+    
     const mappedProfile: UserProfile = {
       id: apiResponse.data.ma_nguoi_dung,
       email: apiResponse.data.email,
@@ -217,7 +217,7 @@ export async function getRegistrationPeriods(): Promise<RegistrationPeriod[]> {
     });
 
     console.log('Registration periods response status:', response.status);
-
+    
     const responseText = await response.text();
     console.log('Raw registration periods response:', responseText);
 
@@ -226,7 +226,7 @@ export async function getRegistrationPeriods(): Promise<RegistrationPeriod[]> {
     }
 
     const apiResponse = JSON.parse(responseText) as ApiRegistrationResponse;
-
+    
     if (apiResponse.error) {
       throw new Error(apiResponse.message || 'Không thể tải danh sách đợt đăng ký');
     }
@@ -258,7 +258,7 @@ export async function checkRegistrationPeriodValidity(periodId: string, status: 
   valid: boolean;
   message: string;
 }> {
-
+  
   if (status === "ended") {
     return {
       valid: true,
@@ -266,7 +266,7 @@ export async function checkRegistrationPeriodValidity(periodId: string, status: 
     };
   }
 
-
+  
   if (status === "upcoming") {
     return {
       valid: false,
@@ -274,7 +274,7 @@ export async function checkRegistrationPeriodValidity(periodId: string, status: 
     };
   }
 
-
+  
   try {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -296,10 +296,10 @@ export async function checkRegistrationPeriodValidity(periodId: string, status: 
     }
 
     const data = await response.json() as ApiValidationResponse;
-
+    
     return {
       valid: data.valid,
-      message: data.message === "success"
+      message: data.message === "success" 
         ? "Bạn không có quyền đăng ký trong đợt này. Vui lòng kiểm tra lại thời gian đăng ký của bạn."
         : data.message,
     };
@@ -370,7 +370,7 @@ export async function searchSubject(
     console.error('Subject search error:', error);
     throw error instanceof Error ? error : new Error('Không thể kết nối đến server');
   }
-}
+} 
 
 interface ApiRegisteredClass {
   ten_lop_hoc: string;
@@ -446,7 +446,7 @@ export async function getRegisteredCourses(periodId: string, semesterId: string)
       throw new Error(data.message || 'Có lỗi xảy ra khi tải danh sách môn học');
     }
 
-
+    
     const courses = data.data.classDetails.map((detail) => ({
       className: detail.ten_lop,
       subjectCode: detail.ma_mon,
@@ -465,7 +465,7 @@ export async function getRegisteredCourses(periodId: string, semesterId: string)
     console.error('Failed to fetch registered courses:', error);
     throw error instanceof Error ? error : new Error('Không thể kết nối đến server');
   }
-}
+} 
 
 interface ApiClassResponse {
   error: boolean;
@@ -523,7 +523,7 @@ export async function getClassDetails(
     console.error('Class details error:', error);
     throw error instanceof Error ? error : new Error('Không thể kết nối đến server');
   }
-}
+} 
 
 export interface UpdateProfileDTO {
   email: string;
@@ -577,14 +577,9 @@ export async function updateProfile(data: UpdateProfileDTO): Promise<UpdateProfi
     return JSON.parse(responseText);
   } catch (error) {
     console.error('Update profile error:', error);
-    throw error instanceof Error ? error : new Error('Không thể kết nối đến server');
+    throw error instanceof Error ? error : new Error('Không th��� kết nối đến server');
   }
-}
-
-export const FIXED_ADDRESS = {
-  VI: "Số 1 Lý Thường Kiệt, Quận 10",
-  EN: "No. 1 Ly Thuong Kiet, District 10"
-};
+} 
 
 interface RegisterClassResponse {
   error: boolean;
@@ -630,7 +625,7 @@ export async function registerClass(
     console.log('Parsed registration response:', data);
 
     if (!response.ok || data.error) {
-
+     
       throw new Error(
         data.message === "Error registering student for class"
           ? "Không thể đăng ký lớp học. Vui lòng kiểm tra lại điều kiện đăng ký."
@@ -638,7 +633,7 @@ export async function registerClass(
       );
     }
 
-
+    
     if (data.message === "success") {
       return {
         error: false,
@@ -649,11 +644,11 @@ export async function registerClass(
     throw new Error('Không thể đăng ký lớp học');
   } catch (error) {
     console.error('Registration error:', error);
-    throw error instanceof Error
-      ? error
+    throw error instanceof Error 
+      ? error 
       : new Error('Không thể kết nối đến máy chủ');
   }
-}
+} 
 
 interface UnregisterClassResponse {
   error: boolean;
@@ -706,7 +701,7 @@ export async function unregisterClass(
       );
     }
 
-
+    
     if (data.message === "success") {
       return {
         error: false,
@@ -717,11 +712,11 @@ export async function unregisterClass(
     throw new Error('Không thể hủy đăng ký lớp học');
   } catch (error) {
     console.error('Unregistration error:', error);
-    throw error instanceof Error
-      ? error
+    throw error instanceof Error 
+      ? error 
       : new Error('Không thể kết nối đến máy chủ');
   }
-}
+} 
 
 interface ApiSemesterGrade {
   MaHK: string;
@@ -770,7 +765,7 @@ export async function getSemesterGrades(): Promise<SemesterGrade[]> {
       throw new Error(data.message || 'Có lỗi xảy ra khi tải điểm học kỳ');
     }
 
-
+    
     return data.data
       .map((grade) => ({
         semesterId: grade.MaHK,
@@ -781,11 +776,11 @@ export async function getSemesterGrades(): Promise<SemesterGrade[]> {
       .sort((a, b) => b.semesterId.localeCompare(a.semesterId)); // Sort newest first
   } catch (error) {
     console.error('Semester grades error:', error);
-    throw error instanceof Error
-      ? error
+    throw error instanceof Error 
+      ? error 
       : new Error('Không thể kết nối đến máy chủ');
   }
-}
+} 
 
 interface ApiClassGrade {
   ma_mon: string;
@@ -844,7 +839,7 @@ export async function getClassGrades(semesterId: string): Promise<ClassGrade[]> 
       throw new Error(data.message || 'Có lỗi xảy ra khi tải điểm môn học');
     }
 
-
+    
     return data.data.map((grade) => ({
       subjectCode: grade.ma_mon,
       subjectNameVN: grade.ten_mon_hoc_VIE,
@@ -858,11 +853,11 @@ export async function getClassGrades(semesterId: string): Promise<ClassGrade[]> 
     }));
   } catch (error) {
     console.error('Class grades error:', error);
-    throw error instanceof Error
-      ? error
+    throw error instanceof Error 
+      ? error 
       : new Error('Không thể kết nối đến máy chủ');
   }
-}
+} 
 
 interface ApiGPAAndCredits {
   f0: string;  // GPA 10
@@ -924,11 +919,11 @@ export async function getGPAAndCredits(): Promise<GPAAndCredits> {
     };
   } catch (error) {
     console.error('GPA and credits error:', error);
-    throw error instanceof Error
-      ? error
+    throw error instanceof Error 
+      ? error 
       : new Error('Không thể kết nối đến máy chủ');
   }
-}
+} 
 
 interface ApiTranscriptGrade {
   f0: string;  // mã
@@ -981,7 +976,7 @@ export async function getTranscript(): Promise<TranscriptGrade[]> {
       throw new Error(data.message || 'Có lỗi xảy ra khi tải bảng điểm');
     }
 
-
+   
     return data.data
       .map((grade) => ({
         subjectCode: grade.f0,
@@ -994,11 +989,11 @@ export async function getTranscript(): Promise<TranscriptGrade[]> {
       .sort((a, b) => b.date.getTime() - a.date.getTime()); // Sort newest first
   } catch (error) {
     console.error('Transcript error:', error);
-    throw error instanceof Error
-      ? error
+    throw error instanceof Error 
+      ? error 
       : new Error('Không thể kết nối đến máy chủ');
   }
-}
+} 
 
 interface ApiStudent {
   ma_nguoi_dung: number;
@@ -1055,8 +1050,6 @@ export async function searchStudents(params: {
     }
 
     let url = `${API_BASE_URL}/subject-registration/search_student`;
-    console.log('Searching students with url:', url)
-    console.log('Searching students with params:', params)
     if (params.studentId) {
       url += `?ma_nguoi_dung=${params.studentId}`;
     } else if (params.faculty) {
@@ -1075,7 +1068,6 @@ export async function searchStudents(params: {
     }
 
     const data = await response.json() as ApiSearchStudentResponse;
-    console.log('Search student response:', data);
 
     if (data.error) {
       throw new Error(data.message || 'Có lỗi xảy ra khi tìm kiếm sinh viên');
@@ -1101,11 +1093,11 @@ export async function searchStudents(params: {
     }));
   } catch (error) {
     console.error('Student search error:', error);
-    throw error instanceof Error
-      ? error
+    throw error instanceof Error 
+      ? error 
       : new Error('Không thể kết nối đến máy chủ');
   }
-}
+} 
 
 export interface UpdateStudentDTO {
   ma_nguoi_dung: number;
@@ -1170,8 +1162,8 @@ export async function updateStudent(data: UpdateStudentDTO): Promise<UpdateStude
     return result;
   } catch (error) {
     console.error('Update student error:', error);
-    throw error instanceof Error
-      ? error
+    throw error instanceof Error 
+      ? error 
       : new Error('Không thể kết nối đến máy chủ');
   }
 } 

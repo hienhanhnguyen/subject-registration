@@ -55,11 +55,6 @@ export function Layout({
     } else {
       return [
         {
-          icon: <CalendarRange />,
-          label: "Đợt đăng ký",
-          value: "registration",
-        },
-        {
           icon: <Users />,
           label: "Quản lý",
           value: "functions",

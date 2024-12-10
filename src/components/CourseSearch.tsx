@@ -113,8 +113,7 @@ export function CourseSearch({ period, onBack }: CourseSearchProps) {
         classInfo.className,
         period.id,
         semesterId,
-        subject.code,
-        periodStatus
+        subject.code
       );
       toast.success(`Đăng ký thành công lớp ${classInfo.className}`);
       await registeredCoursesRef.current?.fetchRegisteredCourses();
@@ -176,6 +175,7 @@ export function CourseSearch({ period, onBack }: CourseSearchProps) {
           ref={registeredCoursesRef}
           periodId={period.id}
           semesterId={period.description.replace("Học kỳ: ", "")}
+          periodStatus={periodStatus}
         />
       </div>
 

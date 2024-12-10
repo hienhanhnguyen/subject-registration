@@ -193,7 +193,7 @@ export function AdminFunctions() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg max-w-2xl w-full p-6">
             <h3 className="text-lg font-medium mb-4">
-              Thông tin chi ti��t sinh viên
+              Thông tin chi tiết sinh viên
             </h3>
             {isEditing ? (
               <form onSubmit={handleUpdate} className="space-y-4">

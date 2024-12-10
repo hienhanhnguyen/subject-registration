@@ -15,12 +15,13 @@ import { toast } from "react-hot-toast";
 interface RegisteredCoursesProps {
   periodId: string;
   semesterId: string;
+  periodStatus?: "active" | "upcoming" | "closed";
 }
 
 export const RegisteredCourses = forwardRef<
   { fetchRegisteredCourses: () => Promise<void> },
   RegisteredCoursesProps
->(({ periodId, semesterId }, ref) => {
+>(({ periodId, semesterId, periodStatus = "active" }, ref) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<{
@@ -38,7 +39,7 @@ export const RegisteredCourses = forwardRef<
       setData(result);
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Không thể tải danh s��ch môn học"
+        err instanceof Error ? err.message : "Không thể tải danh sách môn học"
       );
     } finally {
       setLoading(false);
@@ -55,16 +56,29 @@ export const RegisteredCourses = forwardRef<
 
   const handleUnregister = async (course: RegisteredCourse) => {
     try {
-      setUnregisteringClass(`${course.subjectCode}-${course.className}`);
+      const courseId = `${course.subjectCode}-${course.className}`;
+      setUnregisteringClass(courseId);
+
       await unregisterClass(
         course.className,
         periodId,
         semesterId,
         course.subjectCode
       );
+
+      setData((prevData) => {
+        if (!prevData) return null;
+
+        return {
+          ...prevData,
+          courses: prevData.courses.filter(
+            (c) => `${c.subjectCode}-${c.className}` !== courseId
+          ),
+          totalCredits: prevData.totalCredits - 1,
+        };
+      });
+
       toast.success(`Hủy đăng ký thành công lớp ${course.className}`);
-      // Refresh the registered courses list
-      await fetchRegisteredCourses();
     } catch (err) {
       toast.error(
         err instanceof Error
@@ -158,29 +172,37 @@ export const RegisteredCourses = forwardRef<
                   {course.semester}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <button
-                    onClick={() => handleUnregister(course)}
-                    disabled={
-                      unregisteringClass ===
-                      `${course.subjectCode}-${course.className}`
-                    }
-                    className={`text-red-600 hover:text-red-900 ${
-                      unregisteringClass ===
-                      `${course.subjectCode}-${course.className}`
-                        ? "opacity-50 cursor-not-allowed"
-                        : ""
-                    }`}
-                  >
-                    {unregisteringClass ===
-                    `${course.subjectCode}-${course.className}` ? (
-                      <div className="flex items-center">
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-600 mr-2" />
-                        <span>Đang hủy...</span>
-                      </div>
-                    ) : (
-                      "Hủy đăng ký"
-                    )}
-                  </button>
+                  {periodStatus === "closed" ? (
+                    <span className="text-gray-400">Đã hết hạn đăng ký</span>
+                  ) : (
+                    <button
+                      onClick={() => handleUnregister(course)}
+                      disabled={
+                        unregisteringClass ===
+                          `${course.subjectCode}-${course.className}` ||
+                        periodStatus !== "active"
+                      }
+                      className={`text-red-600 hover:text-red-900 ${
+                        unregisteringClass ===
+                          `${course.subjectCode}-${course.className}` ||
+                        periodStatus !== "active"
+                          ? "opacity-50 cursor-not-allowed"
+                          : ""
+                      }`}
+                    >
+                      {unregisteringClass ===
+                      `${course.subjectCode}-${course.className}` ? (
+                        <div className="flex items-center">
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-600 mr-2" />
+                          <span>Đang hủy...</span>
+                        </div>
+                      ) : periodStatus === "upcoming" ? (
+                        "Chưa mở đăng ký"
+                      ) : (
+                        "Hủy đăng ký"
+                      )}
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}
