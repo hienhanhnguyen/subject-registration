@@ -577,7 +577,7 @@ export async function updateProfile(data: UpdateProfileDTO): Promise<UpdateProfi
     return JSON.parse(responseText);
   } catch (error) {
     console.error('Update profile error:', error);
-    throw error instanceof Error ? error : new Error('Không th��� kết nối đến server');
+    throw error instanceof Error ? error : new Error('Không thể kết nối đến server');
   }
 } 
 
@@ -783,33 +783,31 @@ export async function getSemesterGrades(): Promise<SemesterGrade[]> {
 } 
 
 interface ApiClassGrade {
-  ma_mon: string;
-  ten_mon_hoc_VIE: string;
-  ten_mon_hoc_ENG: string;
-  tin_chi: number;
-  diem_qua_trinh: string;
-  diem_cuoi_ky: string;
-  diem_tong_ket: string;
-  diem_chu: string;
-  diem_he_4: string;
-}
-
-interface ApiClassGradesResponse {
-  error: boolean;
-  message: string;
-  data: ApiClassGrade[];
+  f0: string;  // Tên lớp
+  f1: string;  // Mã môn
+  f2: string;  // Tên môn
+  f3: string;  // Điểm bài tập
+  f4: string;  // Điểm bài tập lớn
+  f5: string;  // Điểm thí nghiệm
+  f6: string;  // Điểm giữa kỳ
+  f7: string;  // Điểm cuối kỳ
+  f8: string;  // Điểm tổng kết hệ 10
+  f9: string;  // Điểm tổng kết hệ 4
+  f10: string; // Điểm chữ
 }
 
 export interface ClassGrade {
+  className: string;
   subjectCode: string;
-  subjectNameVN: string;
-  subjectNameEN: string;
-  credits: number;
+  subjectName: string;
+  homeworkGrade: number;
+  projectGrade: number;
+  labGrade: number;
   midtermGrade: number;
   finalGrade: number;
-  totalGrade: number;
+  totalGrade10: number;
+  totalGrade4: number;
   letterGrade: string;
-  gpa4: number;
 }
 
 export async function getClassGrades(semesterId: string): Promise<ClassGrade[]> {
@@ -833,23 +831,24 @@ export async function getClassGrades(semesterId: string): Promise<ClassGrade[]> 
       throw new Error('Không thể tải điểm môn học');
     }
 
-    const data = await response.json() as ApiClassGradesResponse;
+    const data = await response.json();
 
     if (data.error) {
       throw new Error(data.message || 'Có lỗi xảy ra khi tải điểm môn học');
     }
 
-    
-    return data.data.map((grade) => ({
-      subjectCode: grade.ma_mon,
-      subjectNameVN: grade.ten_mon_hoc_VIE,
-      subjectNameEN: grade.ten_mon_hoc_ENG,
-      credits: grade.tin_chi,
-      midtermGrade: parseFloat(grade.diem_qua_trinh) || 0,
-      finalGrade: parseFloat(grade.diem_cuoi_ky) || 0,
-      totalGrade: parseFloat(grade.diem_tong_ket) || 0,
-      letterGrade: grade.diem_chu,
-      gpa4: parseFloat(grade.diem_he_4) || 0,
+    return data.data.map((grade: ApiClassGrade) => ({
+      className: grade.f0,
+      subjectCode: grade.f1,
+      subjectName: grade.f2,
+      homeworkGrade: parseFloat(grade.f3) || 0,
+      projectGrade: parseFloat(grade.f4) || 0,
+      labGrade: parseFloat(grade.f5) || 0,
+      midtermGrade: parseFloat(grade.f6) || 0,
+      finalGrade: parseFloat(grade.f7) || 0,
+      totalGrade10: parseFloat(grade.f8) || 0,
+      totalGrade4: parseFloat(grade.f9) || 0,
+      letterGrade: grade.f10,
     }));
   } catch (error) {
     console.error('Class grades error:', error);

@@ -212,39 +212,56 @@ export function Transcript() {
                                     Tên môn
                                   </th>
                                   <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">
-                                    Tín chỉ
+                                    Điểm bài tập
                                   </th>
                                   <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">
-                                    Quá trình
+                                    Điểm BTL
                                   </th>
                                   <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">
-                                    Cuối kỳ
+                                    Điểm TN
                                   </th>
                                   <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">
-                                    Tổng kết
+                                    Điểm GK
+                                  </th>
+                                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">
+                                    Điểm CK
+                                  </th>
+                                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">
+                                    Tổng kết hệ 10
+                                  </th>
+                                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">
+                                    Tổng kết hệ 10
+                                  </th>
+                                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">
+                                    Tổng kết hệ 4
                                   </th>
                                   <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">
                                     Điểm chữ
-                                  </th>
-                                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">
-                                    Hệ 4
                                   </th>
                                 </tr>
                               </thead>
                               <tbody>
                                 {classGrades.map((classGrade) => (
-                                  <tr key={classGrade.subjectCode}>
+                                  <tr
+                                    key={`${classGrade.subjectCode}-${classGrade.className}`}
+                                  >
                                     <td className="px-4 py-2 text-sm">
                                       {classGrade.subjectCode}
                                     </td>
                                     <td className="px-4 py-2 text-sm">
-                                      <div>{classGrade.subjectNameVN}</div>
-                                      <div className="text-xs text-gray-500">
-                                        {classGrade.subjectNameEN}
-                                      </div>
+                                      <div>{classGrade.subjectName}</div>
                                     </td>
                                     <td className="px-4 py-2 text-sm">
-                                      {classGrade.credits}
+                                      {classGrade.className}
+                                    </td>
+                                    <td className="px-4 py-2 text-sm">
+                                      {classGrade.homeworkGrade.toFixed(1)}
+                                    </td>
+                                    <td className="px-4 py-2 text-sm">
+                                      {classGrade.projectGrade.toFixed(1)}
+                                    </td>
+                                    <td className="px-4 py-2 text-sm">
+                                      {classGrade.labGrade.toFixed(1)}
                                     </td>
                                     <td className="px-4 py-2 text-sm">
                                       {classGrade.midtermGrade.toFixed(1)}
@@ -253,13 +270,13 @@ export function Transcript() {
                                       {classGrade.finalGrade.toFixed(1)}
                                     </td>
                                     <td className="px-4 py-2 text-sm">
-                                      {classGrade.totalGrade.toFixed(1)}
+                                      {classGrade.totalGrade10.toFixed(1)}
+                                    </td>
+                                    <td className="px-4 py-2 text-sm">
+                                      {classGrade.totalGrade4.toFixed(1)}
                                     </td>
                                     <td className="px-4 py-2 text-sm font-medium">
                                       {classGrade.letterGrade}
-                                    </td>
-                                    <td className="px-4 py-2 text-sm">
-                                      {classGrade.gpa4.toFixed(1)}
                                     </td>
                                   </tr>
                                 ))}
@@ -290,7 +307,7 @@ export function Transcript() {
                   Ngày cập nhật
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Điểm hệ 10
+                  Đi���m hệ 10
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Điểm hệ 4
