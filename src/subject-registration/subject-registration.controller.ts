@@ -210,24 +210,21 @@ export class SubjectRegistrationController {
       };
     }
   }
-  @UseGuards(JwtGuard, RolesGuard)
-  @Role("admin")
+  // @UseGuards(JwtGuard, RolesGuard)
+  // @Role("admin")
   @Get('search_student')
   async findStudent(
-    @Query('mssv') p_mssv: number,
-    @Query('khoa') p_khoa: string,
-    @Query('khoa_sv') p_khoa_sv: string,
-    @Query('he_dao_tao') p_he_dao_tao: string,
-    @Query('gvcn') p_gvcn: number,
-    @Query('chuan_av') p_chuan_av: string,
-    @Query('chuan_sv') p_chuan_sv: string,
+    @Query('ma_nguoi_dung') p_mssv: number = null,
+    @Query('khoa') p_khoa: string = null,
+
   ) {
     try {
       let results;
       if (p_mssv) {
+        console.log('reach inside of find student admin')
         results = await this.subjectRegistrationService.findStudentByMssv(p_mssv);
       } else {
-        results = await this.subjectRegistrationService.findStudent(p_khoa, p_khoa_sv, p_he_dao_tao, p_gvcn, p_chuan_av, p_chuan_sv);
+        results = await this.subjectRegistrationService.findStudent(p_khoa);
       }
       return {
         error: false,

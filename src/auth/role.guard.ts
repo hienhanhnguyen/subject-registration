@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
-  constructor(private reflector: Reflector) {}
+  constructor(private reflector: Reflector) { }
 
   canActivate(
     context: ExecutionContext,
@@ -18,7 +18,7 @@ export class RolesGuard implements CanActivate {
     console.log('guared');
     console.log(role);
     const request = context.switchToHttp().getRequest();
-    console.log(request);
+    // console.log(request);
     const attachedRole = request.user.role;
     console.log(attachedRole);
     if (role === attachedRole) {

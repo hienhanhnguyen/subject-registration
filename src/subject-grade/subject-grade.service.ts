@@ -27,9 +27,11 @@ export class SubjectGradeService {
 
     async getClassGrades(ma_sv_input: number, ma_hk_input: string) {
         try {
+            console.log(ma_sv_input, ma_hk_input);
             const results = await this.prisma.$queryRaw<any[]>`
         CALL GetDiemLopHoc(${ma_sv_input}, ${ma_hk_input});
       `;
+            console.log(results);
             return results;
         } catch (error) {
             console.error(error);

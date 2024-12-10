@@ -258,9 +258,9 @@ export class SubjectRegistrationService {
       throw new Error("Error unregistering student from class");
     }
   }
-  async findStudent(p_khoa: string, p_khoa_sv: string, p_he_dao_tao: string, p_gvcn: number, p_chuan_av: string, p_chuan_sv: string) {
+  async findStudent(p_khoa: string) {
     try {
-      const rawResults = await this.prisma.$queryRaw<any[]>`CALL FILTER_SINHVIEN(${p_khoa}, ${p_khoa_sv}, ${p_he_dao_tao}, ${p_gvcn}, ${p_chuan_av}, ${p_chuan_sv});`;
+      const rawResults = await this.prisma.$queryRaw<any[]>`CALL FILTER_SINHVIEN(${p_khoa}, ${null}, ${null}, ${null}, ${null}, ${null});`;
 
       // Map the raw result to meaningful field names
       const mappedResults = rawResults.map(row => ({
@@ -297,14 +297,14 @@ export class SubjectRegistrationService {
   }
   async findStudentByMssv(mssv: number) {
     try {
+      console.log("find student by MSSV", mssv);
       const rawResult = await this.prisma.$queryRaw<any[]>`CALL FIND_SV_BY_MSSV(${mssv});`;
 
       if (rawResult.length === 0) {
         throw new Error("Student not found");
       }
 
-      const student = rawResult[0];
-      return {
+      const student = rawResult.map(student => ({
         ma_nguoi_dung: student.f0,
         ma_gvcn: student.f1,
         ma_he_dao_tao: student.f2,
@@ -328,7 +328,8 @@ export class SubjectRegistrationService {
         sdt: student.f21,
         cccd: student.f22,
         ngay_sinh: student.f23 ? student.f23 : null,
-      };
+      }));
+      return student;
     } catch (error) {
       console.error(error);
       throw new Error("Error finding student by MSSV");

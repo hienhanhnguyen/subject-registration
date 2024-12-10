@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { khoa, nguoi_dung, sinh_vien } from '@prisma/client';
 import { UpdateDTO } from './dto/updateDTO';
-
+import * as moment from 'moment';
 @Injectable()
 export class UserProfileService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
   async getUser(mssv: number): Promise<nguoi_dung> {
     const resultUser = this.prisma.nguoi_dung.findUnique({
       where: { ma_nguoi_dung: mssv },
@@ -97,6 +97,8 @@ export class UserProfileService {
     if (!userToUpdate) {
       return null;
     } else {
+
+
       const resultUpdate = await this.prisma.nguoi_dung.update({
         where: { ma_nguoi_dung: mssv },
         data: {
@@ -104,7 +106,7 @@ export class UserProfileService {
           dia_chi: updateDTO.dia_chi,
           sdt: updateDTO.sdt,
           cccd: updateDTO.cccd,
-          ngay_sinh: new Date(updateDTO.ngay_sinh),
+
         },
       });
       delete resultUpdate.password;

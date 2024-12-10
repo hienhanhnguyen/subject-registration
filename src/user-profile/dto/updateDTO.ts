@@ -17,6 +17,6 @@ export class UpdateDTO {
   // })
   cccd: string;
 
-  @IsDateString({}, { message: 'Birthday must be a valid date' })
+  // @IsDateString({}, { message: 'Birthday must be a valid date' })
   ngay_sinh: string;
 }

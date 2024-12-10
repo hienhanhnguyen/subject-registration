@@ -38,8 +38,10 @@ export class SubjectGradeController {
     @Query('ma_hk') ma_hk: string
   ) {
     try {
+      console.log("here");
       const ma_sv = req.user.ma_nguoi_dung;
       const results = await this.subjectGradeService.getClassGrades(ma_sv, ma_hk);
+      console.log(results);
       return {
         error: false,
         message: 'success',
