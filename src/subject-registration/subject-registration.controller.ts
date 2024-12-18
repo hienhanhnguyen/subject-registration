@@ -2,8 +2,7 @@ import { Controller, Get, Param, Post, Query, Body, Delete } from "@nestjs/commo
 import { SubjectRegistrationService } from "./subject-registration.service";
 import { JwtGuard } from "src/auth/jwt.guard";
 import { UseGuards, Request } from "@nestjs/common";
-import { Role } from "src/auth/decorators/role.decorator";
-import { RolesGuard } from "src/auth/role.guard";
+
 @Controller("subject-registration")
 export class SubjectRegistrationController {
   constructor(
